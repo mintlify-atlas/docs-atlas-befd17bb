@@ -1,0 +1,78 @@
+---
+title: BubbleMaps Holder Analysis
+description: Token holder distribution visualization and decentralization score from BubbleMaps
+---
+
+Retrieve comprehensive holder distribution data, cluster analysis, and decentralization scores for Solana tokens using BubbleMaps API.
+
+## Endpoint
+
+```
+GET /bubblemaps/maps
+POST /bubblemaps/maps
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment. Payment is settled only upon successful data retrieval.
+
+## Parameters
+
+<ParamField query="address" type="string" required>
+  Solana token contract address to analyze
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  BubbleMaps analysis data containing:
+  - Holder clusters and concentration patterns
+  - Decentralization score
+  - Distribution visualization data
+  - Magic nodes analysis (connected wallet clusters)
+</ResponseField>
+
+## Features
+
+This endpoint provides:
+- **Magic Nodes**: Identifies connected wallet clusters
+- **Holder Clusters**: Groups holders by relationship patterns
+- **Decentralization Score**: Numerical score indicating token distribution health
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/bubblemaps/maps?address=So11111111111111111111111111111111111111112" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "clusters": [
+      {
+        "wallets": 150,
+        "percentage": 35.2,
+        "type": "connected"
+      }
+    ],
+    "decentralization_score": 7.5,
+    "total_holders": 12500,
+    "top_holders_percentage": 45.8
+  }
+}
+```
+
+## Error Responses
+
+- **400 Bad Request** - Missing required `address` parameter
+- **500 Internal Server Error** - Failed to fetch data from BubbleMaps API
+
+## Use Cases
+
+- Identify whale concentration and rug pull risk
+- Analyze token holder decentralization
+- Detect connected wallet clusters
+- Evaluate token distribution health before investing

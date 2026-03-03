@@ -112,26 +112,30 @@
             ]
           },
           {
-            "group": "Research & Analysis",
+            "group": "External Data",
             "pages": [
-              "api/research",
-              "api/browse",
-              "api/x-search"
+              "api/exa-search",
+              "api/check-status",
+              "api/trending-headline"
             ]
           },
           {
             "group": "Token Intelligence",
             "pages": [
               "api/token-report",
+              "api/token-statistic",
               "api/token-god-mode",
               "api/smart-money",
-              "api/dexscreener"
+              "api/dexscreener",
+              "api/trending-jupiter"
             ]
           },
           {
-            "group": "Memecoin Screens",
+            "group": "Partner Integrations",
             "pages": [
-              "api/memecoin-screens"
+              "api/bubblemaps",
+              "api/coingecko",
+              "api/binance"
             ]
           },
           {

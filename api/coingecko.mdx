@@ -1,0 +1,246 @@
+---
+title: CoinGecko Price & Onchain Data
+description: CoinGecko price data, onchain token analysis, and DEX pool information via x402
+---
+
+Access CoinGecko's professional API endpoints for price data, onchain token information, trending pools, and DEX analytics.
+
+## Simple Price Endpoint
+
+Get current price and market data for cryptocurrencies by symbol or CoinGecko ID.
+
+### Endpoint
+
+```
+GET /coingecko/simple-price
+```
+
+### x402 Payment Required
+
+This endpoint uses CoinGecko's x402 API. If x402 payment fails, it automatically falls back to CoinGecko's free API to ensure data availability.
+
+### Parameters
+
+<ParamField query="vs_currencies" type="string" default="usd">
+  Target currency (e.g., "usd", "eur", "btc")
+</ParamField>
+
+<ParamField query="symbols" type="string">
+  Comma-separated symbols (e.g., "btc,eth,sol"). Either `symbols` or `ids` is required.
+</ParamField>
+
+<ParamField query="ids" type="string">
+  Comma-separated CoinGecko IDs (e.g., "bitcoin,ethereum,solana"). Either `symbols` or `ids` is required.
+</ParamField>
+
+<ParamField query="include_market_cap" type="boolean">
+  Include market cap in response
+</ParamField>
+
+<ParamField query="include_24hr_vol" type="boolean">
+  Include 24-hour volume
+</ParamField>
+
+<ParamField query="include_24hr_change" type="boolean">
+  Include 24-hour price change percentage
+</ParamField>
+
+<ParamField query="include_last_updated_at" type="boolean">
+  Include last update timestamp
+</ParamField>
+
+<ParamField query="precision" type="string">
+  Price precision (e.g., "full")
+</ParamField>
+
+### Example Request
+
+```bash
+curl "https://api.syraa.fun/coingecko/simple-price?symbols=btc,eth&include_24hr_change=true" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+### Example Response
+
+```json
+{
+  "bitcoin": {
+    "usd": 45000,
+    "usd_24h_change": 2.5
+  },
+  "ethereum": {
+    "usd": 3000,
+    "usd_24h_change": 1.8
+  }
+}
+```
+
+---
+
+## Onchain Endpoints
+
+Access CoinGecko's onchain data for DEX pools and tokens across multiple networks.
+
+### Search Pools
+
+Search for DEX pools by name, symbol, or contract address.
+
+#### Endpoint
+
+```
+GET /coingecko/onchain/search-pools
+```
+
+#### Parameters
+
+<ParamField query="query" type="string" required>
+  Search query (name, symbol, or contract address)
+</ParamField>
+
+<ParamField query="network" type="string" default="solana">
+  Network ID (e.g., "solana", "base", "eth")
+</ParamField>
+
+<ParamField query="page" type="string">
+  Page number for pagination
+</ParamField>
+
+<ParamField query="include" type="string">
+  Comma-separated fields: base_token, quote_token, dex
+</ParamField>
+
+#### Example Request
+
+```bash
+curl "https://api.syraa.fun/coingecko/onchain/search-pools?query=SOL&network=solana" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+---
+
+### Trending Pools
+
+Get trending DEX pools by network.
+
+#### Endpoint
+
+```
+GET /coingecko/onchain/trending-pools
+```
+
+#### Parameters
+
+<ParamField query="network" type="string" default="base">
+  Network ID (e.g., "base", "solana", "eth")
+</ParamField>
+
+<ParamField query="duration" type="string" default="5m">
+  Time duration for trending calculation (e.g., "5m", "1h", "24h")
+</ParamField>
+
+<ParamField query="page" type="string">
+  Page number
+</ParamField>
+
+<ParamField query="include" type="string">
+  Additional fields to include
+</ParamField>
+
+#### Example Request
+
+```bash
+curl "https://api.syraa.fun/coingecko/onchain/trending-pools?network=base&duration=1h" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+---
+
+### Token Data
+
+Get detailed onchain data for a specific token.
+
+#### Endpoint
+
+```
+GET /coingecko/onchain/token
+```
+
+#### Parameters
+
+<ParamField query="network" type="string" default="base">
+  Network ID (e.g., "base", "solana", "eth")
+</ParamField>
+
+<ParamField query="address" type="string" required>
+  Token contract address
+</ParamField>
+
+<ParamField query="include" type="string">
+  Additional data to include (e.g., "top_pools")
+</ParamField>
+
+<ParamField query="include_composition" type="boolean">
+  Include token composition data
+</ParamField>
+
+#### Example Request
+
+```bash
+curl "https://api.syraa.fun/coingecko/onchain/token?network=solana&address=So11111111111111111111111111111111111111112" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+---
+
+### Token Price
+
+Get simple price data for onchain tokens by contract address.
+
+#### Endpoint
+
+```
+GET /coingecko/onchain/token-price
+```
+
+#### Parameters
+
+<ParamField query="network" type="string" default="base">
+  Network ID
+</ParamField>
+
+<ParamField query="address" type="string" required>
+  Token contract address (comma-separated for multiple)
+</ParamField>
+
+<ParamField query="include_market_cap" type="boolean">
+  Include market cap
+</ParamField>
+
+<ParamField query="include_24hr_vol" type="boolean">
+  Include 24-hour volume
+</ParamField>
+
+<ParamField query="include_24hr_price_change" type="boolean">
+  Include 24-hour price change
+</ParamField>
+
+#### Example Request
+
+```bash
+curl "https://api.syraa.fun/coingecko/onchain/token-price?network=base&address=0x123...&include_24hr_vol=true" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+---
+
+## Error Responses
+
+- **400 Bad Request** - Missing required parameters
+- **502 Bad Gateway** - CoinGecko upstream request failed
+- **503 Service Unavailable** - CoinGecko x402 payer unavailable
+
+## Data Source Header
+
+Responses include `X-Data-Source` header:
+- `coingecko-pro-x402` - Data from paid CoinGecko Pro API
+- `coingecko-free` - Fallback data from free CoinGecko API (simple-price only)

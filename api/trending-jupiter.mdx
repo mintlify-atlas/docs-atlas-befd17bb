@@ -1,0 +1,77 @@
+---
+title: Trending Jupiter Tokens
+description: Get trending tokens on Jupiter DEX with AI-generated summaries and content analysis
+---
+
+Retrieve trending tokens from Jupiter DEX (Solana) with token summaries, news summaries, and curated content.
+
+## Endpoint
+
+```
+GET /trending-jupiter
+POST /trending-jupiter
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment. The request uses Sentinel payer integration for upstream x402 payments to Jupiter API.
+
+## Parameters
+
+No parameters required.
+
+## Response
+
+<ResponseField name="contractAddresses" type="array">
+  Array of token mint addresses (contract addresses) for trending tokens
+</ResponseField>
+
+<ResponseField name="content" type="array">
+  Array of content arrays. Each token has multiple content items with analysis and commentary
+</ResponseField>
+
+<ResponseField name="tokenSummary" type="array">
+  Array of AI-generated token summaries describing each token's purpose and characteristics
+</ResponseField>
+
+<ResponseField name="newsSummary" type="array">
+  Array of news summaries highlighting recent developments and market activity for each token
+</ResponseField>
+
+## Data Source
+
+This endpoint fetches data from Jupiter's "cooking" endpoint at `jupiter.api.corbits.dev`, which provides curated trending token data.
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/trending-jupiter" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "contractAddresses": [
+    "So11111111111111111111111111111111111111112",
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  ],
+  "content": [
+    ["Token gaining momentum", "Strong community support"],
+    ["New partnership announced", "TVL increasing"]
+  ],
+  "tokenSummary": [
+    "SOL is the native token of Solana blockchain...",
+    "USDC is a stablecoin pegged to the US dollar..."
+  ],
+  "newsSummary": [
+    "Recent network upgrades improve performance",
+    "Growing adoption in DeFi protocols"
+  ]
+}
+```
+
+## Error Responses
+
+- **500 Internal Server Error** - Failed to fetch data from Jupiter API or PAYER_KEYPAIR not configured

@@ -1,0 +1,261 @@
+---
+title: Binance Market Data
+description: Binance correlation analysis and OHLC candlestick data for crypto trading pairs
+---
+
+Access Binance market data including price correlation analysis and OHLC (candlestick) data for crypto trading pairs.
+
+## Token Correlation
+
+Calculate price correlation between crypto assets based on real-time Binance data.
+
+### Endpoint
+
+```
+GET /binance/correlation
+```
+
+### x402 Payment Required
+
+This endpoint requires x402 payment.
+
+### Parameters
+
+<ParamField query="symbol" type="string" default="BTCUSDT">
+  Trading pair symbol to analyze (e.g., "BTCUSDT", "ETHUSDT")
+</ParamField>
+
+<ParamField query="limit" type="string" default="10">
+  Maximum number of correlated pairs to return
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string">
+  The queried trading pair symbol
+</ResponseField>
+
+<ResponseField name="top" type="array">
+  Array of correlated pairs, sorted by absolute correlation strength. Each item contains:
+  - `symbol` - Correlated trading pair
+  - `correlation` - Correlation coefficient (-1 to 1)
+</ResponseField>
+
+### Example Request
+
+```bash
+curl "https://api.syraa.fun/binance/correlation?symbol=BTCUSDT&limit=5" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+### Example Response
+
+```json
+{
+  "symbol": "BTCUSDT",
+  "top": [
+    {"symbol": "ETHUSDT", "correlation": 0.8542},
+    {"symbol": "BNBUSDT", "correlation": 0.7231},
+    {"symbol": "SOLUSDT", "correlation": 0.6892},
+    {"symbol": "ADAUSDT", "correlation": 0.6543},
+    {"symbol": "AVAXUSDT", "correlation": 0.6321}
+  ]
+}
+```
+
+---
+
+## Correlation Matrix
+
+Get full correlation matrix for all tracked trading pairs.
+
+### Endpoint
+
+```
+GET /binance/correlation-matrix
+POST /binance/correlation-matrix
+```
+
+### x402 Payment Required
+
+This endpoint requires x402 payment.
+
+### Parameters
+
+No parameters required.
+
+### Response
+
+<ResponseField name="interval" type="string">
+  Time interval used for calculation (e.g., "1m")
+</ResponseField>
+
+<ResponseField name="count" type="number">
+  Number of trading pairs in the matrix
+</ResponseField>
+
+<ResponseField name="tokens" type="array">
+  Array of all trading pair symbols included in the matrix
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Correlation matrix object. Each key is a symbol, with nested objects containing correlation values to all other symbols.
+</ResponseField>
+
+### Tracked Trading Pairs
+
+The correlation matrix includes 50+ major USDT trading pairs:
+- Major assets: BTC, ETH, BNB, SOL, XRP, ADA, AVAX, DOGE, DOT, LINK
+- DeFi tokens: UNI, AAVE, MKR, SNX, PENDLE
+- Layer 2: OP, ARB, MATIC
+- Emerging: SUI, SEI, APT, TIA, INJ, FET
+- And more...
+
+### Example Request
+
+```bash
+curl "https://api.syraa.fun/binance/correlation-matrix" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+### Example Response
+
+```json
+{
+  "interval": "1m",
+  "count": 50,
+  "tokens": ["BTCUSDT", "ETHUSDT", "BNBUSDT", ...],
+  "data": {
+    "BTCUSDT": {
+      "BTCUSDT": 1.0000,
+      "ETHUSDT": 0.8542,
+      "BNBUSDT": 0.7231,
+      ...
+    },
+    "ETHUSDT": {
+      "BTCUSDT": 0.8542,
+      "ETHUSDT": 1.0000,
+      ...
+    },
+    ...
+  }
+}
+```
+
+---
+
+## OHLC Candlestick Data
+
+Fetch OHLC (Open, High, Low, Close) candlestick data for multiple symbols in batch.
+
+### Endpoint
+
+```
+GET /binance/ohlc/batch
+```
+
+### Parameters
+
+<ParamField query="symbols" type="string" required>
+  Comma-separated list of trading pairs (e.g., "BTCUSDT,ETHUSDT,SOLUSDT") or "ALL" for top 50 pairs
+</ParamField>
+
+<ParamField query="interval" type="string" default="1m">
+  Candlestick interval (e.g., "1m", "5m", "15m", "1h", "4h", "1d")
+</ParamField>
+
+### Response
+
+<ResponseField name="count" type="number">
+  Number of symbols fetched
+</ResponseField>
+
+<ResponseField name="interval" type="string">
+  Time interval used
+</ResponseField>
+
+<ResponseField name="timestamp" type="number">
+  Request timestamp (Unix milliseconds)
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of results for each symbol. Each result contains:
+  - `symbol` - Trading pair symbol
+  - `success` - Boolean indicating if fetch succeeded
+  - `data` - Array of OHLC objects (if successful)
+  - `error` - Error message (if failed)
+</ResponseField>
+
+### OHLC Data Format
+
+Each candlestick object contains:
+- `time` - Unix timestamp (milliseconds)
+- `open` - Opening price
+- `high` - Highest price
+- `low` - Lowest price
+- `close` - Closing price
+- `volume` - Trading volume
+
+### Rate Limiting
+
+The endpoint limits concurrent requests to 5 to respect Binance API rate limits. When using "ALL", only the top 50 pairs are fetched to prevent timeouts.
+
+### Example Request
+
+```bash
+curl "https://api.syraa.fun/binance/ohlc/batch?symbols=BTCUSDT,ETHUSDT,SOLUSDT&interval=1h"
+```
+
+### Example Response
+
+```json
+{
+  "count": 3,
+  "interval": "1h",
+  "timestamp": 1234567890123,
+  "results": [
+    {
+      "symbol": "BTCUSDT",
+      "success": true,
+      "data": [
+        {
+          "time": 1234567800000,
+          "open": "45000.00",
+          "high": "45500.00",
+          "low": "44800.00",
+          "close": "45200.00",
+          "volume": "1234.56"
+        },
+        ...
+      ]
+    },
+    {
+      "symbol": "ETHUSDT",
+      "success": true,
+      "data": [...]
+    },
+    {
+      "symbol": "SOLUSDT",
+      "success": true,
+      "data": [...]
+    }
+  ]
+}
+```
+
+---
+
+## Error Responses
+
+- **400 Bad Request** - Missing or invalid parameters
+- **404 Not Found** - Symbol not found or no correlation data available
+- **500 Internal Server Error** - Failed to compute correlation or fetch OHLC data
+- **502 Bad Gateway** - Binance API request failed
+
+## Correlation Methodology
+
+Correlations are calculated using:
+1. **Data Source**: 1-minute OHLC candlesticks from Binance
+2. **Method**: Pearson correlation coefficient on log returns
+3. **Range**: -1 (perfect negative correlation) to +1 (perfect positive correlation)
+4. **Update Frequency**: Real-time based on latest Binance data

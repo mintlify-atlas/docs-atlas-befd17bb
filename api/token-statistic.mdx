@@ -1,0 +1,72 @@
+---
+title: Token Statistics
+description: Rugcheck token statistics including new tokens, recent, trending, and verified tokens
+---
+
+Retrieve comprehensive token statistics from Rugcheck, including new tokens, recently active tokens, trending tokens, and verified tokens on Solana.
+
+## Endpoint
+
+```
+GET /token-statistic
+POST /token-statistic
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment. Payment is settled only upon successful data retrieval.
+
+## Parameters
+
+No parameters required.
+
+## Response
+
+<ResponseField name="rugcheck/new_tokens" type="array">
+  List of newly created tokens on Solana with Rugcheck analysis
+</ResponseField>
+
+<ResponseField name="rugcheck/recent" type="array">
+  Recently active tokens with updated statistics
+</ResponseField>
+
+<ResponseField name="rugcheck/trending" type="array">
+  Trending tokens based on trading activity and volume
+</ResponseField>
+
+<ResponseField name="rugcheck/verified" type="array">
+  Verified tokens that have passed Rugcheck security analysis
+</ResponseField>
+
+## Data Source
+
+This endpoint aggregates data from multiple Rugcheck API endpoints in parallel for comprehensive token statistics.
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/token-statistic" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "rugcheck/new_tokens": [
+    {
+      "mint": "TokenAddress123...",
+      "name": "Example Token",
+      "symbol": "EXMPL",
+      "score": 85
+    }
+  ],
+  "rugcheck/recent": [...],
+  "rugcheck/trending": [...],
+  "rugcheck/verified": [...]
+}
+```
+
+## Error Responses
+
+- **500 Internal Server Error** - Failed to fetch data from Rugcheck API

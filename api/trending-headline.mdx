@@ -1,0 +1,60 @@
+---
+title: Trending Headlines
+description: Get trending crypto headlines and top stories from CryptoNews API
+---
+
+Retrieve trending headlines and top stories in the crypto market, optionally filtered by ticker symbol.
+
+## Endpoint
+
+```
+GET /trending-headline
+POST /trending-headline
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment. The payment will be settled upon successful data retrieval.
+
+## Parameters
+
+<ParamField query="ticker" type="string" default="general">
+  Ticker symbol (e.g., "BTC", "ETH", "SOL") or "general" for market-wide headlines
+</ParamField>
+
+## Response
+
+<ResponseField name="trendingHeadline" type="array">
+  Array of trending headline objects from CryptoNews API. Structure varies based on API response.
+</ResponseField>
+
+## Caching
+
+Results are cached for 90 seconds to optimize performance and reduce API calls.
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/trending-headline?ticker=BTC" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "trendingHeadline": [
+    {
+      "title": "Bitcoin Surges Past $50K",
+      "source": "CryptoNews",
+      "timestamp": 1234567890,
+      "url": "https://example.com/bitcoin-news"
+    }
+  ]
+}
+```
+
+## Error Responses
+
+- **404 Not Found** - Trending headlines not found for the specified ticker
+- **500 Internal Server Error** - Failed to fetch trending headlines from CryptoNews API

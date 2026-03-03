@@ -1,0 +1,53 @@
+---
+title: Check Status
+description: Health check endpoint to verify API server status and connectivity
+---
+
+Simple health check endpoint that confirms the API server is running and responsive.
+
+## Endpoint
+
+```
+GET /check-status
+POST /check-status
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment for production usage.
+
+## Parameters
+
+No parameters required.
+
+## Response
+
+<ResponseField name="status" type="string">
+  Server status - always returns "ok" when server is operational
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Status message - "Check status server is running"
+</ResponseField>
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/check-status" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "status": "ok",
+  "message": "Check status server is running"
+}
+```
+
+## Use Cases
+
+- Verify API connectivity before making other requests
+- Monitor API uptime and availability
+- Test x402 payment integration

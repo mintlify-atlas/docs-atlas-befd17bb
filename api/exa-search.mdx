@@ -1,0 +1,80 @@
+---
+title: EXA Search
+description: Dynamic web search powered by EXA AI for real-time information retrieval
+---
+
+Perform AI-powered web searches using EXA AI. Returns up to 10 results with highlights and contextual information.
+
+## Endpoint
+
+```
+GET /exa-search
+POST /exa-search
+```
+
+## x402 Payment Required
+
+This endpoint requires x402 payment. The payment will be settled upon successful search execution.
+
+## Parameters
+
+<ParamField query="query" type="string" required>
+  Search query string (e.g., "latest news on Nvidia", "crypto market analysis")
+</ParamField>
+
+## Response
+
+<ResponseField name="query" type="string">
+  The search query that was executed
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of EXA search results. Each result contains:
+  - `title` - Page title
+  - `url` - URL of the result
+  - `score` - Relevance score
+  - `highlights` - Text highlights (up to 4000 characters)
+</ResponseField>
+
+<ResponseField name="autopromptString" type="string" nullable>
+  EXA autoprompt string if used, otherwise null
+</ResponseField>
+
+## Search Configuration
+
+The endpoint uses fixed search options:
+- **Results:** 10 per query
+- **Type:** Auto (automatically determines best search method)
+- **Highlights:** Up to 4000 characters per result
+
+## Example Request
+
+```bash
+curl "https://api.syraa.fun/exa-search?query=latest%20news%20on%20Nvidia" \
+  -H "Payment-Request: {x402-payment-header}"
+```
+
+## Example Response
+
+```json
+{
+  "query": "latest news on Nvidia",
+  "results": [
+    {
+      "title": "Nvidia Announces New AI Chips",
+      "url": "https://example.com/nvidia-ai-chips",
+      "score": 0.95,
+      "highlights": {
+        "text": "Nvidia unveiled its latest generation of AI accelerators..."
+      }
+    }
+  ],
+  "autopromptString": null
+}
+```
+
+## Error Responses
+
+- **400 Bad Request** - Missing or empty query parameter
+- **503 Service Unavailable** - EXA API key not configured
+- **500 Internal Server Error** - EXA search failed
