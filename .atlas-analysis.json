@@ -1,0 +1,208 @@
+{
+  "projectType": "saas",
+  "projectName": "Syra",
+  "projectDescription": "AI Trading Intelligence Agent for the Solana ecosystem providing real-time market analysis, signals, and research",
+  "theme": "aspen",
+  "primaryColor": "#8B5CF6",
+  "lightColor": "#A78BFA",
+  "darkColor": "#7C3AED",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Overview",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "introduction",
+              "features",
+              "how-it-works"
+            ]
+          },
+          {
+            "group": "Use Cases",
+            "pages": [
+              "use-cases/traders",
+              "use-cases/analysts",
+              "use-cases/developers"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Getting Started",
+        "groups": [
+          {
+            "group": "Quick Start",
+            "pages": [
+              "getting-started/telegram-bot",
+              "getting-started/web-dashboard",
+              "getting-started/api-access"
+            ]
+          },
+          {
+            "group": "Setup Guides",
+            "pages": [
+              "getting-started/mcp-server",
+              "getting-started/x402-agent"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Features",
+        "groups": [
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/trading-signals",
+              "features/market-research",
+              "features/sentiment-analysis",
+              "features/news-events"
+            ]
+          },
+          {
+            "group": "Advanced Features",
+            "pages": [
+              "features/agent-marketplace",
+              "features/staking",
+              "features/prediction-game"
+            ]
+          },
+          {
+            "group": "Data Sources",
+            "pages": [
+              "features/data-integrations",
+              "features/technical-indicators"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/x402-payment"
+            ]
+          },
+          {
+            "group": "Market Data",
+            "pages": [
+              "api/news",
+              "api/events",
+              "api/sentiment",
+              "api/signals"
+            ]
+          },
+          {
+            "group": "Research & Analysis",
+            "pages": [
+              "api/research",
+              "api/browse",
+              "api/x-search"
+            ]
+          },
+          {
+            "group": "Token Intelligence",
+            "pages": [
+              "api/token-report",
+              "api/token-god-mode",
+              "api/smart-money",
+              "api/dexscreener"
+            ]
+          },
+          {
+            "group": "Memecoin Screens",
+            "pages": [
+              "api/memecoin-screens"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/analytics-summary",
+              "api/sundown-digest"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
+          {
+            "group": "Platforms",
+            "pages": [
+              "integrations/telegram",
+              "integrations/mcp-server",
+              "integrations/x402-agent"
+            ]
+          },
+          {
+            "group": "Developer Tools",
+            "pages": [
+              "integrations/api-playground",
+              "integrations/8004-registry"
+            ]
+          },
+          {
+            "group": "Automation",
+            "pages": [
+              "integrations/n8n-workflows"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Community",
+            "pages": [
+              "resources/support",
+              "resources/contributing"
+            ]
+          },
+          {
+            "group": "Legal",
+            "pages": [
+              "resources/license"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "AI-powered trading signals with entry/exit recommendations",
+    "Real-time market data and technical indicators",
+    "Deep research and sentiment analysis",
+    "Token intelligence and risk assessment",
+    "Agent marketplace and custom AI agents",
+    "Staking and tokenomics system",
+    "Multi-platform access (Telegram, API, MCP)",
+    "x402 payment integration for pay-per-use"
+  ],
+  "publicApiSurface": [
+    "GET /news - Latest crypto news",
+    "GET /event - Upcoming crypto events",
+    "GET /sentiment - Market sentiment analysis",
+    "GET /signal - AI trading signals",
+    "GET /research - Deep research on crypto topics",
+    "GET /browse - Web browsing and extraction",
+    "GET /x-search - X/Twitter search",
+    "GET /token-report - Rugcheck token report",
+    "GET /token-god-mode - Nansen token intelligence",
+    "GET /smart-money - Smart money tracking",
+    "GET /dexscreener - DEXScreener data",
+    "GET /trending-jupiter - Trending tokens on Jupiter",
+    "GET /analytics/summary - Full analytics summary",
+    "GET /memecoin/* - Memecoin screening endpoints",
+    "POST /agent/chat - Agent chat interface",
+    "POST /agent/marketplace - Agent marketplace operations",
+    "GET /8004/register-agent - Register agent on 8004"
+  ]
+}
