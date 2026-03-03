@@ -1,0 +1,143 @@
+---
+title: "Telegram Bot"
+description: "Chat-based access to Syra trading intelligence on Telegram"
+---
+
+## Overview
+
+The Syra Telegram Bot provides instant access to AI-powered trading intelligence, market analysis, and crypto insights directly in your Telegram chat. Get real-time signals, news, sentiment analysis, and token research without leaving your messaging app.
+
+**Bot Link:** [https://t.me/syra_trading_bot](https://t.me/syra_trading_bot)
+
+## Features
+
+- **Trading Signals** — AI-generated analysis for Bitcoin, Ethereum, Solana, and other major tokens
+- **Market News** — Latest crypto news filtered by token or general market
+- **Sentiment Analysis** — Track market mood and trending discussions
+- **Token Lists** — View all supported tokens for analysis
+- **Top Mentions** — Discover the most-discussed tokens today
+- **Documentation Access** — Quick links to full Syra documentation
+
+## Quick Start
+
+<Steps>
+  <Step title="Open the Bot">
+    Click [Syra Trading Agent Bot](https://t.me/syra_trading_bot) or search for `@syra_trading_bot` in Telegram.
+  </Step>
+  
+  <Step title="Start the Conversation">
+    Press the **Start** button to initialize the bot and view the welcome message.
+  </Step>
+  
+  <Step title="Try Your First Command">
+    Send `/list` to view supported tokens or `/signal bitcoin` for a live BTC analysis.
+  </Step>
+</Steps>
+
+## Available Commands
+
+### Essential Commands
+
+| Command | Description | Example |
+|---------|-------------|----------|
+| `/start` | View available commands and get started | `/start` |
+| `/signal <token>` | Get latest trading analysis for a token | `/signal bitcoin` |
+| `/list` | Show all supported tokens | `/list` |
+| `/news <ticker>` | Get latest news for a specific ticker | `/news BTC` |
+| `/top_mention <period>` | Most-discussed tokens in a time period | `/top_mention today` |
+| `/docs` | Open the full documentation site | `/docs` |
+| `/feedback` | Send suggestions or report issues | `/feedback` |
+
+### Command Examples
+
+#### Get Trading Signals
+
+```
+/signal bitcoin
+```
+
+Returns a comprehensive AI-generated trading analysis including:
+- Current market overview (price, volume, volatility)
+- Technical indicators (RSI, MACD, SMA, EMA, Bollinger Bands)
+- Action perspectives and key levels
+- Risk context and exposure considerations
+- AI confidence levels and sentiment interpretation
+
+#### Check Latest News
+
+```
+/news BTC
+```
+
+Receives the latest Bitcoin-related news with:
+- Headline and source
+- Publication timestamp
+- Direct link to full article
+
+#### Find Trending Tokens
+
+```
+/top_mention today
+```
+
+Discovers which tokens are generating the most discussion across crypto communities in the last 24 hours.
+
+## Supported Tokens
+
+Use `/list` in the bot to see the current list of supported tokens. Common tokens include:
+
+- Bitcoin (BTC)
+- Ethereum (ETH)
+- Solana (SOL)
+- And many more...
+
+## Tips & Best Practices
+
+<Tip>
+  **Pro Tip:** Use `/signal` commands during volatile market periods to get AI-powered perspectives on entry/exit levels and momentum shifts.
+</Tip>
+
+- **Regular Updates:** Check `/news general` for broader market context beyond specific tokens
+- **Combine Data:** Use `/signal` + `/news` + sentiment data for comprehensive analysis
+- **Feedback Loop:** Report issues or suggest features using `/feedback` — your input helps improve the bot
+
+## Integration with Syra Ecosystem
+
+The Telegram bot is powered by the Syra API backend and shares the same intelligence layer as:
+
+- [Web Dashboard](https://syraa.fun)
+- [API Playground](https://playground.syraa.fun)
+- [AI Agent](https://agent.syraa.fun)
+- [MCP Server](/integrations/mcp-server) for Cursor and Claude Desktop
+
+## Privacy & Data
+
+- The bot does not store personal messages or trading decisions
+- Commands and queries are processed to return market data only
+- No wallet connection or private keys are ever requested in Telegram
+
+## Need Help?
+
+If you encounter any issues:
+
+1. Use `/start` to reset the bot
+2. Send `/feedback` with your issue description
+3. Visit [docs.syraa.fun](https://docs.syraa.fun) for detailed guides
+4. Join the community on [X (Twitter)](https://x.com/syra_agent)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Playground" icon="flask" href="/integrations/api-playground">
+    Test Syra API endpoints with x402 payments
+  </Card>
+  <Card title="MCP Server" icon="plug" href="/integrations/mcp-server">
+    Use Syra in Cursor and Claude Desktop
+  </Card>
+  <Card title="x402 Agent" icon="robot" href="/integrations/x402-agent">
+    Deploy autonomous research agents
+  </Card>
+  <Card title="8004 Registry" icon="database" href="/integrations/8004-registry">
+    Register Syra on Solana agent registry
+  </Card>
+</CardGroup>

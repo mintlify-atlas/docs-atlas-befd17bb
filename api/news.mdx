@@ -1,0 +1,166 @@
+---
+title: 'News API'
+description: 'Get latest crypto news and market updates with optional ticker filtering'
+---
+
+## Endpoint
+
+```
+GET  /news
+POST /news
+```
+
+## Description
+
+Returns latest cryptocurrency news and market updates from cryptonews-api.com. Supports general news or filtered by specific ticker (BTC, ETH, SOL, etc.).
+
+## Pricing
+
+**$0.01 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+<ParamField query="ticker" type="string" default="general">
+  Cryptocurrency ticker symbol (e.g., BTC, ETH, SOL) or "general" for all news. The ticker is resolved via CoinGecko.
+</ParamField>
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/news?ticker=BTC"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/news \
+  -H "Content-Type: application/json" \
+  -d '{"ticker": "ETH"}'
+```
+
+### General News
+
+```bash
+curl -X GET "https://api.syraa.fun/news"
+```
+
+## Response
+
+<ResponseField name="news" type="array">
+  Array of news articles
+  
+  <Expandable title="Article object">
+    <ResponseField name="title" type="string">
+      Article headline
+    </ResponseField>
+    
+    <ResponseField name="url" type="string">
+      Article URL
+    </ResponseField>
+    
+    <ResponseField name="source" type="string">
+      News source
+    </ResponseField>
+    
+    <ResponseField name="published_at" type="string">
+      Publication timestamp (ISO 8601)
+    </ResponseField>
+    
+    <ResponseField name="tickers" type="array">
+      Related cryptocurrency tickers
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "news": [
+    {
+      "title": "Bitcoin reaches new all-time high",
+      "url": "https://example.com/article",
+      "source": "CryptoNews",
+      "published_at": "2026-03-03T10:00:00Z",
+      "tickers": ["BTC"]
+    },
+    {
+      "title": "Ethereum network upgrade announced",
+      "url": "https://example.com/eth-upgrade",
+      "source": "CoinDesk",
+      "published_at": "2026-03-03T09:30:00Z",
+      "tickers": ["ETH"]
+    }
+  ]
+}
+```
+
+## Error Responses
+
+### 404 Not Found
+
+```json
+{
+  "error": "News not found"
+}
+```
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Failed to fetch news"
+}
+```
+
+## Caching
+
+News responses are cached for **90 seconds** to reduce costs and improve performance. Subsequent requests within the cache window return cached data without additional payment.
+
+## Data Sources
+
+The endpoint aggregates news from multiple cryptonews-api.com endpoints:
+
+- General category news
+- All tickers category
+- Ticker-specific news
+- Ticker-only news (advanced)
+
+## Ticker Resolution
+
+Ticker symbols are automatically resolved using CoinGecko:
+
+```javascript
+const ticker = await resolveTickerFromCoingecko("BTC");
+// Returns: { symbol: "BTC", id: "bitcoin" }
+```
+
+If resolution fails, defaults to "general" news.
+
+## Code Example
+
+```javascript
+// Fetch Bitcoin news
+const response = await fetch('https://api.syraa.fun/news?ticker=BTC');
+const data = await response.json();
+
+console.log(`Found ${data.news.length} articles`);
+data.news.forEach(article => {
+  console.log(`${article.title} - ${article.source}`);
+});
+```
+
+## Best Practices
+
+1. **Use Caching**: Multiple requests for same ticker within 90s use cached data
+2. **Specify Ticker**: Filter by ticker for more relevant results
+3. **Handle Errors**: Check for 404/500 responses
+4. **General News**: Omit ticker or use "general" for broad market news
+
+## Related Endpoints
+
+- [Sentiment Analysis](/api/sentiment) - Market sentiment by ticker
+- [Events](/api/events) - Upcoming crypto events
+- [Trending Headlines](/api/trending-headline) - Top trending stories

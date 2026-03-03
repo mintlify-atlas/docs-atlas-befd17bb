@@ -1,0 +1,478 @@
+---
+title: 'Prediction Game'
+description: 'Create and participate in cryptocurrency price prediction events'
+icon: 'trophy'
+---
+
+## Overview
+
+The Syra Prediction Game enables users to create and participate in cryptocurrency price prediction events. Users stake tokens to create events, participants pay entry fees to predict prices, and winners share the prize pool based on prediction accuracy.
+
+## How It Works
+
+### Event Lifecycle
+
+1. **Joining Phase**: Participants pay entry fees to join (24-72 hours)
+2. **Prediction Phase**: Participants submit price predictions (4-24 hours)
+3. **Waiting Phase**: Wait for target time to get final price (24-48 hours)
+4. **Resolution**: Winners determined and payouts distributed
+
+### Roles
+
+**Event Creator**
+- Stakes SYRA tokens as prize pool
+- Sets event parameters (duration, entry fee, etc.)
+- Earns portion of entry fees as profit
+
+**Participants**
+- Pay entry fee to join event
+- Submit price predictions during prediction phase
+- Win prizes for most accurate predictions
+
+## Creating Events
+
+### Event Creation
+
+Create a new prediction event:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v1/prediction-game/events',
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      token: 'SOL',
+      creatorWallet: 'your_wallet_address',
+      creatorDeposit: 5.0,              // SOL stake as prize pool
+      joiningDuration: 48,               // Hours for joining phase
+      predictionPhaseDuration: 4,        // Hours for prediction phase
+      waitingPhaseDuration: 24,          // Hours to wait for final price
+      entryFee: 0.1,                     // SOL per participant
+      minParticipants: 10,
+      maxParticipants: 25,
+      distribution: {
+        creator: 70,                     // 70% of entry fees to creator
+        platform: 30                     // 30% of entry fees to platform
+      },
+      winnerSplit: {
+        first: 50,                       // 50% of prize pool
+        second: 30,                      // 30% of prize pool
+        third: 20                        // 20% of prize pool
+      },
+      creationTxSignature: 'tx_signature_here'
+    })
+  }
+);
+
+const event = await response.json();
+```
+
+**Supported Tokens:**
+- BTC (Bitcoin)
+- SOL (Solana)
+- ETH (Ethereum)
+- DOGE (Dogecoin)
+- ADA (Cardano)
+- XRP (Ripple)
+- AVAX (Avalanche)
+- DOT (Polkadot)
+
+<Note>
+  Minimum creator deposit is 0.5 SOL. Higher deposits attract more participants.
+</Note>
+
+### Event Parameters
+
+**Duration Settings:**
+- **Joining Duration**: 24-72 hours recommended
+- **Prediction Duration**: 4-24 hours
+- **Waiting Duration**: 24-48 hours
+- **Total Event Length**: ~3-6 days
+
+**Participant Limits:**
+- **Min Participants**: 3-10 (minimum 3 required)
+- **Max Participants**: 10-100 (affects prize pool)
+
+**Fee Distribution:**
+- **Creator Fee**: 60-90% of entry fees (default 70%)
+- **Platform Fee**: 10-40% of entry fees (default 30%)
+- **Total**: Must equal 100%
+
+**Prize Split:**
+- **First Place**: 40-60% of prize pool (default 50%)
+- **Second Place**: 25-35% of prize pool (default 30%)
+- **Third Place**: 15-25% of prize pool (default 20%)
+- **Total**: Must equal 100%
+
+## Participating in Events
+
+### Browse Events
+
+Find active prediction events:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v1/prediction-game/events?status=joining,predicting&token=SOL&page=1&limit=20'
+);
+
+const { events, pagination } = await response.json();
+```
+
+**Filter Options:**
+- `status`: joining, predicting, waiting, completed, cancelled
+- `token`: BTC, SOL, ETH, etc.
+- `creator`: Filter by creator wallet
+- `page`: Pagination page number
+- `limit`: Results per page (default 20)
+
+### Join an Event
+
+Pay entry fee to join:
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}/join`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      walletAddress: 'your_wallet_address',
+      txSignature: 'payment_tx_signature'
+    })
+  }
+);
+
+const updatedEvent = await response.json();
+```
+
+<Warning>
+  Entry fee payments are non-refundable unless the event is cancelled due to insufficient participants.
+</Warning>
+
+### Submit Prediction
+
+Submit your price prediction:
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}/predict`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      walletAddress: 'your_wallet_address',
+      predictedPrice: 185.50          // Your price prediction
+    })
+  }
+);
+
+const updatedEvent = await response.json();
+```
+
+**Prediction Guidelines:**
+- Submit during prediction phase only
+- One prediction per participant
+- Predictions are hidden until reveal
+- Early predictions earn bonus points
+
+## Event Resolution
+
+### Resolve Event
+
+Complete event with final price:
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}/resolve`,
+  {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      finalPrice: 187.25,
+      resolutionTxSignature: 'payout_tx_signature'
+    })
+  }
+);
+
+const resolvedEvent = await response.json();
+```
+
+### Winner Determination
+
+Winners are determined by:
+1. **Accuracy**: Closest predictions to final price
+2. **Timing Bonus**: Early predictions get small advantage
+3. **Top 3**: First, second, and third place winners
+
+### Payout Structure
+
+**Winners receive from Creator Deposit:**
+```javascript
+{
+  "payouts": {
+    "firstPrize": 2.5,      // 50% of 5 SOL creator deposit
+    "secondPrize": 1.5,     // 30% of 5 SOL creator deposit
+    "thirdPrize": 1.0,      // 20% of 5 SOL creator deposit
+    "winners": [
+      {
+        "walletAddress": "winner1...",
+        "rank": 1,
+        "predictedPrice": 187.20,
+        "accuracy": 99.97,
+        "prize": 2.5
+      }
+    ]
+  }
+}
+```
+
+**Creator receives from Entry Fees:**
+```javascript
+{
+  "payouts": {
+    "creatorPayout": 1.75,      // 70% of (25 participants × 0.1 SOL)
+    "platformPayout": 0.75      // 30% of entry fees
+  }
+}
+```
+
+## Event Management
+
+### Get Event Details
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}`
+);
+
+const event = await response.json();
+```
+
+### Get Payout Information
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}/payouts`
+);
+
+const { current, projectedAtMax, distribution, finalPayouts } = await response.json();
+```
+
+### User Events
+
+Get events for a specific user:
+
+```javascript
+// Events created by user
+const created = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/user/${walletAddress}?type=created`
+);
+
+// Events user joined
+const joined = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/user/${walletAddress}?type=joined`
+);
+
+// Events user predicted in
+const predicted = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/user/${walletAddress}?type=predicted`
+);
+
+// All user events
+const all = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/user/${walletAddress}`
+);
+```
+
+### Cancel Event
+
+Cancel event (refunds issued):
+
+```javascript
+const response = await fetch(
+  `https://api.syraa.fun/v1/prediction-game/events/${eventId}`,
+  {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      walletAddress: 'creator_wallet',
+      reason: 'Insufficient participants'
+    })
+  }
+);
+
+const { message, event, refundInfo } = await response.json();
+```
+
+**Cancellation Reasons:**
+- Insufficient participants after joining phase
+- Technical issues
+- Creator request (before predictions start)
+
+## Platform Statistics
+
+### Get Stats
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v1/prediction-game/events/stats'
+);
+
+const stats = await response.json();
+```
+
+**Statistics Include:**
+
+```json
+{
+  "totalEvents": 1234,
+  "activeEvents": 45,
+  "joiningEvents": 15,
+  "predictingEvents": 20,
+  "waitingEvents": 10,
+  "completedEvents": 1189,
+  "totalParticipants": 12450,
+  "totalPredictions": 11200,
+  "totalPoolDistributed": 15678.5,
+  "totalWinnersPaid": 12543.2,
+  "totalCreatorPaid": 2345.8,
+  "totalPlatformEarned": 789.5
+}
+```
+
+## Integration Example
+
+```javascript
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+
+class PredictionGame {
+  constructor(connection, wallet) {
+    this.connection = connection;
+    this.wallet = wallet;
+    this.baseUrl = 'https://api.syraa.fun/v1/prediction-game';
+  }
+
+  async createEvent(params) {
+    // 1. Send creator deposit transaction
+    const depositTx = await this.createDepositTransaction(params.creatorDeposit);
+    const signature = await this.wallet.sendTransaction(depositTx, this.connection);
+    await this.connection.confirmTransaction(signature);
+
+    // 2. Create event on backend
+    const response = await fetch(`${this.baseUrl}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...params,
+        creatorWallet: this.wallet.publicKey.toString(),
+        creationTxSignature: signature
+      })
+    });
+
+    return await response.json();
+  }
+
+  async joinEvent(eventId, entryFee) {
+    // 1. Pay entry fee
+    const paymentTx = await this.createPaymentTransaction(entryFee);
+    const signature = await this.wallet.sendTransaction(paymentTx, this.connection);
+    await this.connection.confirmTransaction(signature);
+
+    // 2. Join event
+    const response = await fetch(`${this.baseUrl}/events/${eventId}/join`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        walletAddress: this.wallet.publicKey.toString(),
+        txSignature: signature
+      })
+    });
+
+    return await response.json();
+  }
+
+  async submitPrediction(eventId, predictedPrice) {
+    const response = await fetch(
+      `${this.baseUrl}/events/${eventId}/predict`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet.publicKey.toString(),
+          predictedPrice
+        })
+      }
+    );
+
+    return await response.json();
+  }
+
+  async getActiveEvents(token) {
+    const response = await fetch(
+      `${this.baseUrl}/events?status=joining,predicting&token=${token}`
+    );
+    return await response.json();
+  }
+
+  async getMyEvents() {
+    const response = await fetch(
+      `${this.baseUrl}/events/user/${this.wallet.publicKey.toString()}`
+    );
+    return await response.json();
+  }
+
+  // Helper methods
+  async createDepositTransaction(amount) {
+    // Implement deposit transaction creation
+    throw new Error('Implement deposit transaction');
+  }
+
+  async createPaymentTransaction(amount) {
+    // Implement payment transaction creation
+    throw new Error('Implement payment transaction');
+  }
+}
+
+// Usage
+const game = new PredictionGame(connection, wallet);
+
+// Create an event
+const event = await game.createEvent({
+  token: 'SOL',
+  creatorDeposit: 5.0,
+  entryFee: 0.1,
+  minParticipants: 10,
+  maxParticipants: 25
+});
+
+console.log(`Event created: ${event._id}`);
+
+// Join an event
+await game.joinEvent(event._id, 0.1);
+
+// Submit prediction
+await game.submitPrediction(event._id, 187.50);
+```
+
+## Best Practices
+
+<Tip>
+  Create events with reasonable entry fees and adequate prize pools to attract participants.
+</Tip>
+
+1. **Fair Pricing**: Set entry fees that match prize pool value
+2. **Adequate Time**: Give enough time for each phase
+3. **Popular Tokens**: Use well-known tokens for better participation
+4. **Reputation Building**: Complete events successfully to build trust
+5. **Marketing**: Share event links to attract participants
+
+<Warning>
+  Events are automatically cancelled if minimum participants not reached. Creator deposit is refunded.
+</Warning>
+
+## Related Features
+
+- [Staking System](/features/staking) - Stake to create events
+- [Trading Signals](/features/trading-signals) - Inform predictions
+- [Technical Indicators](/features/technical-indicators) - Analysis tools

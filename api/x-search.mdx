@@ -1,0 +1,264 @@
+---
+title: 'X/Twitter Search'
+description: 'Search and analyze X (formerly Twitter) content for crypto research'
+---
+
+## Overview
+
+The X Search feature enables searching and analyzing X/Twitter content as part of the Syra research platform. It's integrated into the research workflow for social media intelligence.
+
+## Integration
+
+X Search is accessed through:
+
+- **Research Dashboard** - Custom X search panel
+- **AI Agent** - Agents can search X for relevant content
+- **Research Resume** - X search results included in summaries
+
+## Features
+
+### Search Capabilities
+
+- Search tweets by keywords and hashtags
+- Filter by date ranges
+- Analyze sentiment and engagement
+- Extract trending topics
+- Track influential accounts
+
+### Use Cases
+
+1. **Market Sentiment** - Gauge community sentiment
+2. **Trend Analysis** - Identify emerging trends
+3. **Influencer Tracking** - Monitor key opinion leaders
+4. **News Discovery** - Find breaking news early
+5. **Community Research** - Understand community dynamics
+
+## Research Integration
+
+X Search results are stored in research payload:
+
+```json
+{
+  "customXSearch": {
+    "lastQuery": "#Solana OR #SOL filter:verified",
+    "data": {
+      "result": "Tweet analysis and findings..."
+    }
+  }
+}
+```
+
+## Data Structure
+
+### Search Query
+
+The `lastQuery` field stores the search parameters:
+
+```javascript
+lastQuery: "#Bitcoin OR #BTC (moon OR bullish) -filter:retweets"
+```
+
+### Search Results
+
+The `result` field contains:
+
+- Tweet text and metadata
+- Engagement metrics (likes, retweets, replies)
+- Author information
+- Timestamps
+- Sentiment analysis
+- Trending insights
+
+## AI Summarization
+
+X Search content is analyzed in research summaries:
+
+```javascript
+if (customXSearch?.data?.result) {
+  parts.push(
+    `[Custom X Search]
+Query: ${customXSearch.lastQuery || "custom"}
+
+${customXSearch.data.result}`
+  );
+}
+```
+
+The AI extracts:
+- Key sentiment shifts
+- Trending narratives
+- Influential opinions  
+- Community concerns
+- Emerging opportunities
+
+## Search Operators
+
+### Basic Search
+
+```
+Solana DeFi
+```
+
+### Hashtags
+
+```
+#Solana #DeFi #Web3
+```
+
+### Boolean Operators
+
+```
+(Solana OR SOL) AND (DeFi OR DEX)
+```
+
+### Filters
+
+```
+#Bitcoin filter:verified min_faves:100
+```
+
+### Exclude Terms
+
+```
+Solana -scam -airdrop
+```
+
+### Date Ranges
+
+```
+Ethereum since:2026-03-01 until:2026-03-03
+```
+
+## Code Example
+
+```javascript
+// X Search research data
+const xSearchData = {
+  lastQuery: "#Solana (DeFi OR NFT) filter:verified min_retweets:10",
+  data: {
+    result: `
+Found 247 tweets matching criteria.
+
+Top Tweets:
+1. @SolanaExpert: "Solana DeFi TVL up 45% this month..."
+   - 342 likes, 89 retweets
+   - Sentiment: Positive
+
+2. @CryptoAnalyst: "New NFT marketplace on Solana..."
+   - 201 likes, 52 retweets  
+   - Sentiment: Neutral
+
+Overall Sentiment: 68% Positive, 24% Neutral, 8% Negative
+Trending Topics: DeFi growth, NFT marketplaces, Network upgrades
+    `
+  }
+};
+
+// Add to research
+const researchData = {
+  customXSearch: xSearchData,
+  panels: { /* other research */ }
+};
+
+// Generate summary
+const response = await fetch(
+  'https://api.syraa.fun/internal/research-resume',
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(researchData)
+  }
+);
+
+const { resume } = await response.json();
+console.log(resume); // Includes X Search insights
+```
+
+## Analysis Framework
+
+### Sentiment Analysis
+
+Track sentiment across tweets:
+
+```javascript
+const sentimentBreakdown = {
+  positive: 68,  // % positive tweets
+  neutral: 24,   // % neutral
+  negative: 8    // % negative  
+};
+```
+
+### Engagement Metrics
+
+Measure tweet engagement:
+
+```javascript
+const metrics = {
+  avgLikes: 145,
+  avgRetweets: 34,
+  avgReplies: 12,
+  topTweetLikes: 2341
+};
+```
+
+### Trending Topics
+
+Identify emerging trends:
+
+```javascript
+const trending = [
+  { topic: "DeFi growth", mentions: 89 },
+  { topic: "NFT marketplace", mentions: 67 },
+  { topic: "Network upgrade", mentions: 45 }
+];
+```
+
+## Best Practices
+
+1. **Use Filters**: Filter by verified accounts for quality
+2. **Set Minimums**: Use min_faves/min_retweets to find popular content
+3. **Exclude Noise**: Filter out spam and scams with exclusions
+4. **Date Ranges**: Focus on recent content for current sentiment
+5. **Combine Operators**: Use AND/OR for precise searches
+6. **Track Influencers**: Follow key opinion leaders in space
+
+## Common Queries
+
+### Solana Ecosystem
+
+```
+(#Solana OR #SOL) (DeFi OR NFT OR meme) filter:verified -scam
+```
+
+### Bitcoin Sentiment
+
+```
+#Bitcoin (bullish OR bearish OR neutral) min_faves:50
+```
+
+### Ethereum News
+
+```
+(#Ethereum OR #ETH) (upgrade OR update OR news) filter:verified since:2026-03-01
+```
+
+### DeFi Trends
+
+```
+#DeFi (yield OR lending OR DEX) -airdrop min_retweets:10
+```
+
+## Limitations
+
+- Search results may be rate-limited
+- Historical data availability varies
+- Deleted tweets won't appear
+- Private accounts are excluded
+- Some filters require specific access levels
+
+## Related Features
+
+- [Research API](/api/research) - Research data persistence
+- [Browse API](/api/browse) - Web content extraction  
+- [Sentiment API](/api/sentiment) - Market sentiment analysis
+- [News API](/api/news) - Crypto news and updates

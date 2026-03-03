@@ -1,0 +1,345 @@
+---
+title: 'Token God Mode (Nansen)'
+description: 'Comprehensive token analytics from Nansen including flow intelligence, holders, and trading data'
+---
+
+## Endpoint
+
+```
+GET  /token-god-mode
+POST /token-god-mode
+```
+
+## Description
+
+Returns comprehensive token analytics from Nansen, including flow intelligence, holder analysis, DEX trades, transfers, and PnL leaderboard. Provides institutional-grade insights for token research.
+
+## Pricing
+
+**$0.05 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+<ParamField query="tokenAddress" type="string" required>
+  Solana token contract address for analysis
+</ParamField>
+
+<ParamField body="address" type="string" required>
+  Token address (when using POST method)
+</ParamField>
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/token-god-mode?tokenAddress=TOKEN_ADDRESS_HERE"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/token-god-mode \
+  -H "Content-Type: application/json" \
+  -d '{"address": "TOKEN_ADDRESS_HERE"}'
+```
+
+## Response
+
+<ResponseField name="flow-intelligence" type="object">
+  Token flow intelligence and smart money activity
+</ResponseField>
+
+<ResponseField name="holders" type="object">
+  Holder distribution and wallet analysis
+</ResponseField>
+
+<ResponseField name="flow-history" type="object">
+  Historical flow patterns and trends
+</ResponseField>
+
+<ResponseField name="bought-and-sold-tokens" type="object">
+  Tokens frequently traded alongside this token
+</ResponseField>
+
+<ResponseField name="dex-trades" type="object">
+  Recent DEX trading activity
+</ResponseField>
+
+<ResponseField name="transfers" type="object">
+  Token transfer activity
+</ResponseField>
+
+<ResponseField name="jup-dcas" type="object">
+  Jupiter DCA (Dollar Cost Average) strategies
+</ResponseField>
+
+<ResponseField name="pnl-leaderboard" type="object">
+  Top traders by profit and loss
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "flow-intelligence": {
+    "smartMoney": {
+      "inflow": 145000,
+      "outflow": 67000,
+      "netFlow": 78000
+    },
+    "signals": ["accumulation", "smart_money_inflow"]
+  },
+  "holders": {
+    "total": 12450,
+    "distribution": {
+      "top10": 45.2,
+      "top50": 67.8,
+      "top100": 78.9
+    },
+    "smartMoneyHolders": 234
+  },
+  "flow-history": {
+    "daily": [
+      {
+        "date": "2026-03-03",
+        "inflow": 234000,
+        "outflow": 189000,
+        "netFlow": 45000
+      }
+    ]
+  },
+  "bought-and-sold-tokens": {
+    "commonPairs": [
+      {
+        "token": "USDC",
+        "frequency": 89,
+        "correlation": 0.87
+      }
+    ]
+  },
+  "dex-trades": {
+    "recent": [
+      {
+        "timestamp": "2026-03-03T10:15:00Z",
+        "type": "buy",
+        "amount": 15000,
+        "price": 0.045,
+        "trader": "smart_money"
+      }
+    ]
+  },
+  "transfers": {
+    "volume24h": 567000,
+    "count24h": 2341
+  },
+  "jup-dcas": {
+    "active": 45,
+    "totalValue": 234000
+  },
+  "pnl-leaderboard": {
+    "topTraders": [
+      {
+        "rank": 1,
+        "profit": 123456,
+        "roi": 234.5,
+        "trades": 89
+      }
+    ]
+  }
+}
+```
+
+## Error Responses
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Internal server error",
+  "message": "HTTP 404 Not Found"
+}
+```
+
+## Data Components
+
+### Flow Intelligence
+
+Smart money flow analysis:
+
+- Net inflow/outflow from smart wallets
+- Accumulation/distribution signals
+- Institutional activity indicators
+- Flow momentum and trends
+
+### Holder Analysis
+
+- Total unique holders
+- Holder concentration (top 10, 50, 100)
+- Smart money holder count
+- Holder growth rate
+
+### Flow History
+
+Historical flow patterns:
+
+- Daily/weekly inflow and outflow
+- Net flow trends over time
+- Smart money movement patterns
+
+### Related Tokens
+
+Tokens traded together:
+
+- Common trading pairs
+- Correlation coefficients
+- Trading frequency
+
+### DEX Trades
+
+Recent trading activity:
+
+- Buy/sell transactions
+- Trade sizes and prices
+- Trader classifications (smart money, whale, etc.)
+- Volume and price impact
+
+### Transfers
+
+On-chain transfer data:
+
+- Transfer volume and count
+- Large transfers (whale moves)
+- Transfer patterns
+
+### Jupiter DCAs
+
+Dollar-cost averaging activity:
+
+- Active DCA strategies
+- Total value in DCAs
+- Average strategy size
+
+### PnL Leaderboard
+
+Top trader performance:
+
+- Ranked by profit/loss
+- ROI percentages
+- Trade counts
+- Win rates
+
+## Data Source
+
+Fetches from Nansen Sentinel API:
+
+```javascript
+const responses = await Promise.all(
+  tokenGodModeRequests.map(({ url, payload }) =>
+    getSentinelPayerFetch()(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ token_address: tokenAddress, ...payload })
+    })
+  )
+);
+```
+
+## Code Example
+
+```javascript
+// Analyze token with Nansen data
+const tokenAddress = "YOUR_TOKEN_ADDRESS";
+
+const response = await fetch(
+  `https://api.syraa.fun/token-god-mode?tokenAddress=${tokenAddress}`
+);
+
+const data = await response.json();
+
+// Check smart money activity
+const flow = data['flow-intelligence'];
+if (flow.smartMoney.netFlow > 0) {
+  console.log(`Smart money accumulating: +$${flow.smartMoney.netFlow}`);
+} else {
+  console.log(`Smart money distributing: $${flow.smartMoney.netFlow}`);
+}
+
+// Analyze holder concentration
+const holders = data.holders;
+console.log(`Total holders: ${holders.total}`);
+console.log(`Top 10 control: ${holders.distribution.top10}%`);
+
+if (holders.distribution.top10 > 50) {
+  console.warn("High concentration risk");
+}
+
+// Check recent trading
+const trades = data['dex-trades'];
+trades.recent.slice(0, 5).forEach(trade => {
+  console.log(`${trade.type.toUpperCase()}: $${trade.amount} at $${trade.price}`);
+});
+
+// Analyze top traders
+const leaderboard = data['pnl-leaderboard'];
+leaderboard.topTraders.slice(0, 3).forEach(trader => {
+  console.log(`Rank ${trader.rank}: ${trader.roi}% ROI, ${trader.trades} trades`);
+});
+```
+
+## Analysis Strategies
+
+### Smart Money Following
+
+```javascript
+function analyzeSmartMoney(data) {
+  const { smartMoney } = data['flow-intelligence'];
+  const netFlow = smartMoney.netFlow;
+  
+  if (netFlow > 100000) {
+    return "Strong smart money accumulation";
+  } else if (netFlow > 0) {
+    return "Moderate smart money inflow";  
+  } else if (netFlow > -100000) {
+    return "Moderate smart money outflow";
+  } else {
+    return "Strong smart money distribution";
+  }
+}
+```
+
+### Holder Health Check
+
+```javascript
+function checkHolderHealth(holders) {
+  const { total, distribution, smartMoneyHolders } = holders;
+  
+  const issues = [];
+  
+  if (total < 1000) issues.push("Low holder count");
+  if (distribution.top10 > 50) issues.push("High concentration");
+  if (smartMoneyHolders < 10) issues.push("Few smart money holders");
+  
+  return issues.length === 0 
+    ? "Healthy holder distribution"
+    : `Issues: ${issues.join(", ")}`;
+}
+```
+
+## Best Practices
+
+1. **Check Flow Direction**: Follow smart money accumulation
+2. **Monitor Concentration**: Avoid highly concentrated tokens
+3. **Analyze Trades**: Look for smart money buy signals
+4. **Track Trends**: Use flow history for context
+5. **Compare PnL**: See how top traders are performing
+6. **Combine Signals**: Use multiple data points for decisions
+
+## Related Endpoints
+
+- [Smart Money](/api/smart-money) - General smart money tracking
+- [Token Report](/api/token-report) - Rugcheck security analysis
+- [DexScreener](/api/dexscreener) - DEX market data

@@ -1,0 +1,272 @@
+---
+title: 'Market Research'
+description: 'Deep market research powered by AI and real-time data aggregation'
+icon: 'chart-mixed'
+---
+
+## Overview
+
+Syra's Market Research feature provides comprehensive intelligence gathering and analysis for cryptocurrency markets. Using advanced AI models and multi-source data aggregation, it delivers executive-level summaries and actionable insights.
+
+## Research Capabilities
+
+### AI-Powered Web Search
+
+Leverage EXA AI for dynamic web searches across the latest crypto news and market analysis.
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/exa-search?query=latest+news+on+Nvidia', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { query, results, autopromptString } = await response.json();
+```
+
+**Key Features:**
+- 10 results per search with highlights
+- Up to 4,000 characters per highlight
+- Auto-type detection (neural/keyword)
+- Relevance scoring
+
+### Research Dashboard
+
+The internal research system allows for persistent storage and AI-powered summarization of research findings.
+
+#### Store Research
+
+```javascript
+// Save research to dashboard
+await fetch('https://api.syraa.fun/v1/internal/research-store', {
+  method: 'PUT',
+  headers: { 
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    payload: {
+      panels: { /* research panels */ },
+      customXSearch: { /* search results */ },
+      deepResearch: { /* deep research */ }
+    }
+  })
+});
+```
+
+#### Retrieve Research
+
+```javascript
+// Load saved research
+const response = await fetch('https://api.syraa.fun/v1/internal/research-store', {
+  headers: { 'Authorization': `Bearer ${apiKey}` }
+});
+
+const { payload, savedAt } = await response.json();
+```
+
+### Executive Research Summaries
+
+Generate concise executive summaries from complex research data using Jatevo AI:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v1/internal/research-resume', {
+  method: 'POST',
+  headers: { 
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    panels: { /* research panels */ },
+    customXSearch: { /* X search results */ },
+    deepResearch: { /* deep research content */ },
+    browse: { /* browse results */ }
+  })
+});
+
+const { resume, truncated } = await response.json();
+```
+
+**Summary Features:**
+- **Key Insights**: Strategic takeaways from research
+- **Risk Analysis**: Identified risks and opportunities
+- **Actionable Recommendations**: Next steps for decision-making
+- **Structured Format**: Bullet points and short paragraphs
+- **Max Tokens**: 8,192 tokens for comprehensive summaries
+
+## Data Sources
+
+Market research aggregates data from multiple premium sources:
+
+### News & Events
+- Latest crypto news articles
+- Market-moving events
+- Conference announcements
+- Project launches
+
+### Market Data
+- Price movements and trends
+- Volume analysis
+- Liquidity metrics
+- On-chain data
+
+### Social Intelligence
+- Twitter/X trending topics
+- Community sentiment
+- Influencer activity
+- Social volume metrics
+
+## Research Types
+
+### Panel Research
+Organized research across multiple topics simultaneously:
+- Multiple parallel research threads
+- Panel-specific queries and results
+- Aggregated insights across panels
+
+### Deep Research
+Comprehensive analysis on specific topics:
+- Extended content analysis
+- Multi-source verification
+- Historical context integration
+
+### Browse Research
+Web browsing and content extraction:
+- Direct URL analysis
+- Content summarization
+- Key information extraction
+
+### Custom X Search
+Targeted social media research:
+- Twitter/X specific queries
+- Trending topic analysis
+- Influencer tracking
+
+<Note>
+  All research data is stored with timestamps and can be retrieved for later analysis.
+</Note>
+
+## Pricing
+
+### EXA Search
+- **Cost**: $0.05 per search
+- **Results**: 10 results with highlights
+- **Payment**: x402 micropayments
+
+### Internal Research APIs
+- **Cost**: API key authentication (no per-request fee)
+- **Access**: Internal dashboard use only
+
+<Info>
+  EXA search is optimized for crypto market analysis with specialized neural search capabilities.
+</Info>
+
+## Use Cases
+
+### Token Research
+Comprehensive due diligence on new tokens:
+1. Search for project news and announcements
+2. Analyze social sentiment
+3. Review technical documentation
+4. Generate executive summary
+
+### Market Analysis
+Understand broader market conditions:
+1. Aggregate news across multiple sources
+2. Identify trending narratives
+3. Track institutional activity
+4. Summarize key insights
+
+### Competitive Intelligence
+Monitor competitors and market position:
+1. Track competitor announcements
+2. Analyze market share changes
+3. Identify strategic opportunities
+4. Generate competitive reports
+
+### Risk Assessment
+Identify potential risks before they materialize:
+1. Monitor news for red flags
+2. Track social sentiment shifts
+3. Analyze on-chain movements
+4. Generate risk summaries
+
+## Integration Example
+
+```javascript
+import { PaymentClient } from '@faremeter/x402-client';
+
+class MarketResearch {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.paymentClient = new PaymentClient({
+      network: 'solana',
+      wallet: yourWallet
+    });
+  }
+
+  async searchNews(query) {
+    const response = await this.paymentClient.fetch(
+      `https://api.syraa.fun/v2/exa-search?query=${encodeURIComponent(query)}`
+    );
+    
+    if (response.ok) {
+      return await response.json();
+    }
+  }
+
+  async saveResearch(researchData) {
+    const response = await fetch(
+      'https://api.syraa.fun/v1/internal/research-store',
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ payload: researchData })
+      }
+    );
+    
+    return await response.json();
+  }
+
+  async generateSummary(researchData) {
+    const response = await fetch(
+      'https://api.syraa.fun/v1/internal/research-resume',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(researchData)
+      }
+    );
+    
+    const { resume } = await response.json();
+    return resume;
+  }
+}
+
+// Usage
+const research = new MarketResearch(process.env.SYRA_API_KEY);
+const results = await research.searchNews('Solana DeFi ecosystem growth');
+const summary = await research.generateSummary({ customXSearch: results });
+```
+
+## Best Practices
+
+<Tip>
+  Combine multiple research types for comprehensive analysis. Use panel research for broad topics and deep research for specific questions.
+</Tip>
+
+1. **Structured Queries**: Use specific, well-formed queries for better results
+2. **Multi-Source Verification**: Cross-reference findings across sources
+3. **Regular Updates**: Save research periodically for historical tracking
+4. **Context Preservation**: Include relevant context when generating summaries
+5. **Action Items**: Extract actionable insights from research summaries
+
+## Related Features
+
+- [News & Events](/features/news-events) - Real-time news tracking
+- [Sentiment Analysis](/features/sentiment-analysis) - Market sentiment metrics
+- [Data Integrations](/features/data-integrations) - External data sources

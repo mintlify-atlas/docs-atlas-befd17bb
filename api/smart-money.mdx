@@ -1,0 +1,347 @@
+---
+title: 'Smart Money (Nansen)'
+description: 'Track smart money movements including net flow, holdings, and DEX trades'
+---
+
+## Endpoint
+
+```
+GET  /smart-money
+POST /smart-money
+```
+
+## Description
+
+Track smart money wallet activity on Solana including net flow, current holdings, historical positions, DEX trades, and DCA strategies. Provides insights into institutional and whale movements.
+
+## Pricing
+
+**$0.05 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+No required parameters. Returns general smart money data for Solana ecosystem.
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/smart-money"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/smart-money \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+<ResponseField name="smart-money/netflow" type="object">
+  Smart money net flow data showing accumulation or distribution
+</ResponseField>
+
+<ResponseField name="smart-money/holdings" type="object">
+  Current smart money token holdings
+</ResponseField>
+
+<ResponseField name="smart-money/historical-holdings" type="object">
+  Historical holdings data and position changes
+</ResponseField>
+
+<ResponseField name="smart-money/dex-trades" type="object">
+  Recent DEX trades by smart money wallets
+</ResponseField>
+
+<ResponseField name="smart-money/dcas" type="object">
+  Dollar cost averaging patterns and strategies
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "smart-money/netflow": {
+    "tokens": [
+      {
+        "symbol": "SOL",
+        "netFlow24h": 1234567,
+        "inflow": 2345678,
+        "outflow": 1111111,
+        "signal": "accumulation"
+      },
+      {
+        "symbol": "USDC",
+        "netFlow24h": -567890,
+        "inflow": 890123,
+        "outflow": 1458013,
+        "signal": "distribution"
+      }
+    ]
+  },
+  "smart-money/holdings": {
+    "positions": [
+      {
+        "token": "SOL",
+        "amount": 12345678,
+        "valueUsd": 1234567890,
+        "percentage": 45.2,
+        "holders": 2341
+      }
+    ]
+  },
+  "smart-money/historical-holdings": {
+    "history": [
+      {
+        "date": "2026-03-03",
+        "token": "SOL",
+        "amount": 12345678,
+        "change": 234567
+      }
+    ]
+  },
+  "smart-money/dex-trades": {
+    "trades": [
+      {
+        "timestamp": "2026-03-03T10:15:00Z",
+        "token": "BONK",
+        "type": "buy",
+        "amount": 45000,
+        "price": 0.0000123,
+        "walletLabel": "Smart Trader 1"
+      }
+    ]
+  },
+  "smart-money/dcas": {
+    "active": [
+      {
+        "token": "SOL",
+        "frequency": "daily",
+        "amount": 1000,
+        "totalValue": 30000,
+        "startDate": "2026-02-01"
+      }
+    ]
+  }
+}
+```
+
+## Error Responses
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Internal server error",
+  "message": "HTTP 500 Nansen API error"
+}
+```
+
+## Data Components
+
+### Net Flow
+
+Smart money accumulation/distribution:
+
+- **netFlow24h**: Net flow in last 24 hours (positive = accumulation)
+- **inflow**: Total inflow to smart wallets
+- **outflow**: Total outflow from smart wallets
+- **signal**: Accumulation or distribution indicator
+
+### Holdings
+
+Current smart money positions:
+
+- **amount**: Token quantity held
+- **valueUsd**: USD value of holdings
+- **percentage**: % of total smart money portfolio
+- **holders**: Number of smart wallets holding
+
+### Historical Holdings
+
+Position changes over time:
+
+- **date**: Date of snapshot
+- **amount**: Holdings on that date  
+- **change**: Change from previous period
+
+### DEX Trades
+
+Recent trading activity:
+
+- **timestamp**: Trade execution time
+- **type**: Buy or sell
+- **amount**: Trade size in USD
+- **price**: Execution price
+- **walletLabel**: Smart wallet identifier
+
+### DCA Strategies
+
+Dollar-cost averaging:
+
+- **frequency**: Daily, weekly, etc.
+- **amount**: Regular purchase amount
+- **totalValue**: Total accumulated
+- **startDate**: When DCA began
+
+## Data Source
+
+Fetches from Nansen Sentinel API:
+
+```javascript
+const responses = await Promise.all(
+  smartMoneyRequests.map(({ url, payload }) =>
+    getSentinelPayerFetch()(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+  )
+);
+```
+
+## Code Example
+
+```javascript
+// Track smart money activity
+const response = await fetch('https://api.syraa.fun/smart-money');
+const data = await response.json();
+
+// Analyze net flow signals
+const netflow = data['smart-money/netflow'];
+netflow.tokens.forEach(token => {
+  console.log(`${token.symbol}: ${token.signal}`);
+  console.log(`  Net Flow 24h: $${token.netFlow24h.toLocaleString()}`);
+  
+  if (token.signal === 'accumulation' && token.netFlow24h > 1000000) {
+    console.log(`  STRONG BUY SIGNAL `);
+  }
+});
+
+// Check current holdings
+const holdings = data['smart-money/holdings'];
+console.log('\nTop Smart Money Holdings:');
+holdings.positions.slice(0, 5).forEach((pos, i) => {
+  console.log(`${i + 1}. ${pos.token}: $${pos.valueUsd.toLocaleString()} (${pos.percentage}%)`);
+});
+
+// Monitor recent trades
+const trades = data['smart-money/dex-trades'];
+console.log('\nRecent Smart Money Trades:');
+trades.trades.slice(0, 10).forEach(trade => {
+  console.log(`${trade.type.toUpperCase()} ${trade.token}: $${trade.amount}`);
+});
+```
+
+## Analysis Strategies
+
+### Follow the Smart Money
+
+```javascript
+function analyzeNetFlow(netflow) {
+  const strongBuys = netflow.tokens.filter(
+    t => t.signal === 'accumulation' && t.netFlow24h > 500000
+  );
+  
+  const strongSells = netflow.tokens.filter(
+    t => t.signal === 'distribution' && t.netFlow24h < -500000  
+  );
+  
+  return {
+    buySignals: strongBuys.map(t => t.symbol),
+    sellSignals: strongSells.map(t => t.symbol)
+  };
+}
+```
+
+### Position Change Tracking
+
+```javascript
+function trackPositionChanges(historical) {
+  const recent = historical.history.slice(0, 7); // Last 7 days
+  
+  const tokens = {};
+  recent.forEach(entry => {
+    if (!tokens[entry.token]) tokens[entry.token] = [];
+    tokens[entry.token].push(entry.change);
+  });
+  
+  return Object.entries(tokens).map(([token, changes]) => {
+    const totalChange = changes.reduce((sum, c) => sum + c, 0);
+    const avgChange = totalChange / changes.length;
+    
+    return {
+      token,
+      totalChange,
+      avgChange,
+      trend: totalChange > 0 ? 'accumulating' : 'distributing'
+    };
+  });
+}
+```
+
+### DCA Signal Detection
+
+```javascript
+function analyzeDCAs(dcas) {
+  return dcas.active.map(dca => {
+    const { token, amount, frequency, totalValue } = dca;
+    const avgPrice = totalValue / (amount * getDCACount(frequency, dca.startDate));
+    
+    return {
+      token,
+      strategy: `${frequency} $${amount}`,
+      invested: totalValue,
+      avgEntry: avgPrice,
+      signal: 'Long-term accumulation'
+    };
+  });
+}
+
+function getDCACount(frequency, startDate) {
+  const days = (Date.now() - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  if (frequency === 'daily') return days;
+  if (frequency === 'weekly') return days / 7;
+  return days / 30; // monthly
+}
+```
+
+## Trading Signals
+
+### Strong Buy Signals
+- Net flow greater than $1M in 24h
+- Multiple smart wallets accumulating
+- Increasing DCA activity
+- Holdings percentage growing
+
+### Strong Sell Signals  
+- Net outflow greater than $1M in 24h
+- Smart wallets distributing
+- Decreasing holdings over time
+- Large sell trades detected
+
+### Neutral Signals
+- Net flow near zero
+- Mixed buying and selling
+- Stable holdings percentage
+- Low trading volume
+
+## Best Practices
+
+1. **Follow Large Flows**: Focus on tokens with significant net flow
+2. **Confirm with Trades**: Check if trades match net flow signals
+3. **Track Holdings Changes**: Monitor position increases/decreases
+4. **Identify DCA Patterns**: Long-term DCAs show conviction
+5. **Cross-Reference**: Use with other Nansen endpoints
+6. **Consider Timeframes**: Different signals for short vs long term
+
+## Related Endpoints
+
+- [Token God Mode](/api/token-god-mode) - Comprehensive token analytics
+- [Analytics Summary](/api/analytics-summary) - Full market analytics
+- [Sentiment API](/api/sentiment) - Market sentiment data

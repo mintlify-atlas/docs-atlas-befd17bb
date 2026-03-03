@@ -1,0 +1,164 @@
+---
+title: 'Web Browse API'
+description: 'Web page extraction and browsing capabilities for research'
+---
+
+## Overview
+
+The Browse API provides web content extraction capabilities for research purposes. It allows you to extract and analyze content from web pages as part of the internal research workflow.
+
+## Integration
+
+Browsing is integrated into the research system and accessed through:
+
+- **Agent Tools** - AI agents can browse web pages
+- **Research Dashboard** - Manual web content extraction
+- **Research Resume** - Browse results included in AI summaries
+
+## Features
+
+### Content Extraction
+
+- Clean HTML to readable text
+- Extract main content from web pages
+- Remove navigation, ads, and boilerplate
+- Preserve important structure and links
+
+### Use Cases
+
+1. **News Analysis** - Extract articles for research
+2. **Documentation** - Read technical documentation  
+3. **Market Research** - Analyze competitor websites
+4. **Data Collection** - Gather information from multiple sources
+
+## Research Integration
+
+Browse results are stored in the research payload:
+
+```json
+{
+  "browse": {
+    "lastQuery": "https://example.com/article",
+    "data": {
+      "result": "Extracted web page content..."
+    }
+  }
+}
+```
+
+## Content Truncation
+
+Large web pages are truncated to prevent issues:
+
+```javascript
+// If result is string and under 50KB, use as-is
+if (typeof result === "string" && result.length < 50000) {
+  return result;
+}
+
+// Otherwise truncate to 20KB with ellipsis
+const truncated = typeof result === "string"
+  ? result.slice(0, 20000) + "…"
+  : JSON.stringify(result).slice(0, 20000) + "…";
+```
+
+## AI Summarization
+
+Browse content is included in research summaries:
+
+```javascript
+// Browse section added to research blob
+parts.push(`[Browse]
+Query: ${browse.lastQuery || "browse"}
+
+${text}`);
+```
+
+The AI analyzes browse content alongside:
+- Panel research
+- X/Twitter searches  
+- Deep research
+
+To generate comprehensive summaries.
+
+## Code Example
+
+```javascript
+// Add browse results to research
+const researchData = {
+  browse: {
+    lastQuery: "https://solana.com/news/latest-update",
+    data: {
+      result: extractedContent // From your browser/scraper
+    }
+  },
+  panels: { /* other research */ }
+};
+
+// Store for later
+await fetch('https://api.syraa.fun/internal/research-store', {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ payload: researchData })
+});
+
+// Generate summary including browse content
+const summaryResponse = await fetch(
+  'https://api.syraa.fun/internal/research-resume',
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(researchData)
+  }
+);
+
+const { resume } = await summaryResponse.json();
+console.log(resume); // Includes insights from browsed pages
+```
+
+## Best Practices
+
+1. **Target Main Content**: Browse article pages, not homepages
+2. **Respect Limits**: Keep results under 50KB when possible
+3. **Include Context**: Use descriptive URLs in lastQuery
+4. **Combine Sources**: Use browse with other research methods
+5. **Check Quality**: Verify extracted content is readable
+
+## Content Guidelines
+
+### Good Browse Targets
+- Blog posts and articles
+- Documentation pages
+- News releases  
+- Research papers
+- Product pages
+
+### Avoid
+- Login-required pages
+- Single-page applications
+- Video/media-heavy pages
+- Pages with paywalls
+- Rate-limited sites
+
+## Error Handling
+
+Handle browsing errors gracefully:
+
+```javascript
+try {
+  const content = await extractWebContent(url);
+  researchData.browse = {
+    lastQuery: url,
+    data: { result: content }
+  };
+} catch (error) {
+  console.error(`Failed to browse ${url}:`, error);
+  // Continue with other research methods
+}
+```
+
+## Related Features
+
+- [Research API](/api/research) - Store and summarize research
+- [X Search](/api/x-search) - Search X/Twitter
+- [EXA Search](/api/exa-search) - AI-powered web search

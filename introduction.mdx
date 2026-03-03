@@ -1,0 +1,184 @@
+---
+title: Welcome to Syra
+description: The Intelligence Layer for Autonomous Trading Agents on Solana
+---
+
+<img src="/images/hero.jpg" alt="Syra Hero" className="rounded-lg" />
+
+# **Syra**
+
+### The Intelligence Layer for Autonomous Trading Agents
+
+**Syra** is an intelligent, research-driven **AI Trading Intelligence Agent** for the Solana ecosystem. Built to help traders, analysts, and developers make smarter, data-based decisions by combining real-time market data, on-chain signals, narrative intelligence, and structured AI-driven research.
+
+<Note>
+  Syra is designed as **an intelligence layer**, not just a signal bot. It enhances understanding with structured research, risk-aware perspectives, and learning-oriented explanations.
+</Note>
+
+## What Makes Syra Different?
+
+Syra delivers actionable trading intelligence through multiple channels:
+
+- **Real-time market data** — Live technical and contextual indicators
+- **On-chain activity signals** — Holder flows, smart money tracking, DEX activity
+- **Narrative & sentiment intelligence** — News aggregation, trends, and market mood analysis
+- **Structured AI-driven research** — Clear, actionable insights with confidence levels and reasoning
+
+## Key Features at a Glance
+
+<CardGroup cols={2}>
+  <Card title="Market Analysis" icon="chart-line" href="/features#market-analysis">
+    Real-time price, volume, volatility, and trend strength indicators powered by Binance, DEXScreener, and CoinGecko.
+  </Card>
+  
+  <Card title="Technical Indicators" icon="chart-candlestick" href="/features#technical-indicators">
+    RSI, MACD, SMA, EMA, Bollinger Bands, and custom trading signals with entry/exit recommendations.
+  </Card>
+  
+  <Card title="On-Chain Intelligence" icon="link" href="/features#on-chain-intelligence">
+    Smart money tracking, holder flows, whale behavior detection, and Nansen integration for deep analysis.
+  </Card>
+  
+  <Card title="AI Research" icon="brain" href="/features#ai-research">
+    Deep research on tokens and trends with cited sources, confidence levels, and risk context.
+  </Card>
+</CardGroup>
+
+## Where Syra Runs
+
+<CardGroup cols={3}>
+  <Card title="Telegram Bot" icon="telegram" href="/getting-started/telegram">
+    Chat-based access to market analysis and insights. Start with `/signal bitcoin` or `/news BTC`.
+  </Card>
+  
+  <Card title="x402 Autonomous Agent" icon="robot" href="/integrations/x402">
+    Research & insights workflows on x402scan with pay-per-use API access.
+  </Card>
+  
+  <Card title="API & Workflows" icon="code" href="/api-reference/overview">
+    Integrate with n8n, automation pipelines, and custom trading bots.
+  </Card>
+</CardGroup>
+
+## Quick Start Options
+
+<Tabs>
+  <Tab title="Telegram Bot">
+    Get started in seconds with the Telegram bot:
+
+    1. Open [Syra Trading Agent Bot](https://t.me/syra_trading_bot)
+    2. Press **Start**
+    3. Use `/list` to view supported tokens
+    4. Try `/signal bitcoin` for a live analysis
+
+    **Popular Commands:**
+    - `/signal bitcoin` — Get latest BTC trading analysis
+    - `/news BTC` — Get latest BTC-related news
+    - `/top_mention today` — Most-discussed tokens today
+  </Tab>
+  
+  <Tab title="API Access">
+    Access Syra intelligence programmatically:
+
+    ```bash
+    # Get trading signal for Bitcoin
+    curl https://api.syraa.fun/signal?token=bitcoin
+
+    # Get latest crypto news
+    curl https://api.syraa.fun/news?ticker=BTC
+
+    # Get smart money tracking data
+    curl https://api.syraa.fun/smart-money
+    ```
+
+    <Info>
+      Most API endpoints use x402 pay-per-use pricing. See [API Reference](/api-reference/overview) for details.
+    </Info>
+  </Tab>
+  
+  <Tab title="MCP Server">
+    Use Syra in Cursor, Claude Desktop, or other AI assistants:
+
+    ```bash
+    cd mcp-server
+    npm install
+    npm run build
+    ```
+
+    Add to your MCP config and ask for "crypto news" or "trading signals" directly in your AI chat.
+  </Tab>
+</Tabs>
+
+## Use Cases
+
+<CardGroup cols={3}>
+  <Card title="For Traders" icon="chart-mixed" href="/use-cases/traders">
+    Real-time signals, risk scoring, entry/exit recommendations, and market sentiment analysis.
+  </Card>
+  
+  <Card title="For Analysts" icon="magnifying-glass-chart" href="/use-cases/analysts">
+    Deep research, correlation analysis, smart money tracking, and narrative intelligence.
+  </Card>
+  
+  <Card title="For Developers" icon="code" href="/use-cases/developers">
+    API integration, autonomous agent workflows, and custom trading bot development.
+  </Card>
+</CardGroup>
+
+## Platform Capabilities
+
+| Section | Description |
+|---------|-------------|
+| **Market Overview** | Price, volume, volatility, trend strength |
+| **Technical Indicators** | RSI, MACD, SMA, EMA, Bollinger Bands |
+| **Action Perspectives** | Key levels, momentum bias, scenario outlooks |
+| **Risk Context** | R/R awareness and exposure considerations |
+| **AI Insights** | Confidence levels and sentiment interpretation |
+
+## Why Choose Syra?
+
+<AccordionGroup>
+  <Accordion title="AI-Assisted Insights">
+    Multiple indicators and reasoning combined into structured trade outlooks. Every output includes explanations and indicator context for educational value.
+  </Accordion>
+  
+  <Accordion title="Real-Time Market Data">
+    Powered by live technical and contextual sources including Binance, CoinGecko, DEXScreener, Nansen, and Rugcheck.
+  </Accordion>
+  
+  <Accordion title="Research-Driven Output">
+    Focused on understanding, not blind execution. Syra enhances decision-making with structured reasoning and risk awareness.
+  </Accordion>
+  
+  <Accordion title="Multi-Platform Access">
+    Available via Telegram, x402 Agent, API workflows, and MCP server for Cursor/Claude Desktop.
+  </Accordion>
+  
+  <Accordion title="Agentic Automation">
+    Analysis pipelines that run across platforms with x402 pay-per-use integration for autonomous agents.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  Syra is built to **enhance understanding**, not to replace decision-making. Always conduct your own research and manage risk appropriately.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Features" icon="stars" href="/features">
+    Learn about all the capabilities Syra offers for trading intelligence.
+  </Card>
+  
+  <Card title="How It Works" icon="gear" href="/how-it-works">
+    Understand the architecture and workflow behind Syra's intelligence layer.
+  </Card>
+  
+  <Card title="Get Started" icon="rocket" href="/getting-started/telegram">
+    Start using Syra with the Telegram bot or API integration.
+  </Card>
+  
+  <Card title="API Reference" icon="book" href="/api-reference/overview">
+    Browse the complete API documentation and integration guides.
+  </Card>
+</CardGroup>

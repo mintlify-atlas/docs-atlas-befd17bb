@@ -1,0 +1,477 @@
+---
+title: 'Data Integrations'
+description: 'Access premium market data from Binance, Nansen, CoinGecko, DEXScreener, and more'
+icon: 'database'
+---
+
+## Overview
+
+Syra integrates with leading crypto data providers to deliver comprehensive market intelligence. All integrations use the x402 micropayment protocol for efficient, pay-per-use data access.
+
+## Integrated Data Providers
+
+### Binance
+
+Real-time price data and market analytics from the world's largest exchange.
+
+#### Ticker Price
+
+Get current prices for all Binance trading pairs:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v1/regular/binance-ticker'
+);
+
+const prices = await response.json();
+```
+
+**Response:**
+
+```json
+[
+  {
+    "symbol": "BTCUSDT",
+    "price": "65432.10"
+  },
+  {
+    "symbol": "ETHUSDT",
+    "price": "3421.50"
+  }
+]
+```
+
+#### OHLC Data
+
+Historical candlestick data for technical analysis:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/binance/ohlc?symbol=BTCUSDT&interval=1h&limit=100',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { data } = await response.json();
+```
+
+#### Correlation Analysis
+
+Token correlation matrix for portfolio analysis:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/binance/correlation?symbol=BTCUSDT&limit=10',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { symbol, top } = await response.json();
+```
+
+**Correlation Response:**
+
+```json
+{
+  "symbol": "BTCUSDT",
+  "top": [
+    { "symbol": "ETHUSDT", "correlation": 0.8542 },
+    { "symbol": "BNBUSDT", "correlation": 0.7234 },
+    { "symbol": "SOLUSDT", "correlation": 0.6891 }
+  ]
+}
+```
+
+<Info>
+  Binance correlation analysis tracks 50+ major tokens with 1-minute granularity.
+</Info>
+
+### Nansen
+
+On-chain intelligence and smart money tracking.
+
+#### Token God Mode
+
+Comprehensive token analysis including:
+- Flow intelligence
+- Holder distribution
+- Flow history
+- Bought/sold tokens
+- DEX trades
+- Transfers
+- Jupiter DCAs
+- PnL leaderboard
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/nansen/token-god-mode?tokenAddress=So11111111111111111111111111111111111111112',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const data = await response.json();
+```
+
+**Response Structure:**
+
+```json
+{
+  "flow-intelligence": { /* Flow metrics */ },
+  "holders": { /* Holder analysis */ },
+  "flow-history": { /* Historical flows */ },
+  "bought-and-sold-tokens": { /* Trading pairs */ },
+  "dex-trades": { /* DEX activity */ },
+  "transfers": { /* Transfer history */ },
+  "jup-dcas": { /* Jupiter DCA positions */ },
+  "pnl-leaderboard": { /* Top traders */ }
+}
+```
+
+#### Smart Money Tracking
+
+Track what smart money is doing:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/nansen/smart-money',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { smartMoney } = await response.json();
+```
+
+<Note>
+  Nansen integration uses Syra's Sentinel payer for automated x402 payments to Nansen's API.
+</Note>
+
+### CoinGecko
+
+Comprehensive crypto price and market data.
+
+#### Simple Price
+
+Get prices for multiple tokens with market data:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/coingecko/simple-price?symbols=btc,eth,sol&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const prices = await response.json();
+```
+
+**Response:**
+
+```json
+{
+  "bitcoin": {
+    "usd": 65432.10,
+    "usd_market_cap": 1234567890000,
+    "usd_24h_vol": 45678900000,
+    "usd_24h_change": 2.34
+  },
+  "ethereum": {
+    "usd": 3421.50,
+    "usd_market_cap": 411234567890,
+    "usd_24h_vol": 23456789000,
+    "usd_24h_change": 1.87
+  }
+}
+```
+
+**Query Parameters:**
+- `vs_currencies`: Target currency (default: usd)
+- `symbols`: Comma-separated symbols (btc,eth,sol)
+- `ids`: CoinGecko IDs (bitcoin,ethereum,solana)
+- `include_market_cap`: true/false
+- `include_24hr_vol`: true/false
+- `include_24hr_change`: true/false
+- `include_last_updated_at`: true/false
+
+#### On-Chain Data
+
+Detailed on-chain metrics:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/coingecko/onchain?id=solana',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const onchain = await response.json();
+```
+
+<Tip>
+  CoinGecko integration falls back to free API if x402 fails, ensuring data availability.
+</Tip>
+
+### DEXScreener
+
+DEX aggregated data and trending tokens.
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/dexscreener',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const data = await response.json();
+```
+
+**Data Categories:**
+
+```json
+{
+  "dexscreener/token-profiles": [ /* Latest token profiles */ ],
+  "dexscreener/community-takeovers": [ /* Community takeover listings */ ],
+  "dexscreener/ads": [ /* Advertisement listings */ ],
+  "dexscreener/token-boosts": [ /* Boosted token listings */ ],
+  "dexscreener/token-boosts-top": [ /* Top boosted tokens */ ]
+}
+```
+
+### RugCheck
+
+Token security and risk analysis for Solana tokens.
+
+#### Token Report
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/rugcheck/token-report?address=TOKEN_ADDRESS',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { data } = await response.json();
+```
+
+#### Token Risk Alerts
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/rugcheck/token-risk-alerts?address=TOKEN_ADDRESS',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { alerts } = await response.json();
+```
+
+#### Token Statistics
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/rugcheck/token-statistic?address=TOKEN_ADDRESS',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { statistics } = await response.json();
+```
+
+### BubbleMaps
+
+Visual holder distribution analysis:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/bubblemaps/maps?tokenAddress=TOKEN_ADDRESS',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { maps } = await response.json();
+```
+
+### CoinMarketCap
+
+Market data from CoinMarketCap:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/coinmarketcap?symbols=BTC,ETH,SOL',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const data = await response.json();
+```
+
+## Jupiter Integration
+
+Swap execution via Jupiter aggregator:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/jupiter/swap-order',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Payment-Request': paymentHeader
+    },
+    body: JSON.stringify({
+      from_token: 'SOL',
+      to_token: 'USDC',
+      amount: '1.0',
+      taker: 'your_wallet_address'
+    })
+  }
+);
+
+const { transaction, swapSignature } = await response.json();
+```
+
+### Jupiter Trending
+
+Trending tokens on Jupiter:
+
+```javascript
+const response = await fetch(
+  'https://api.syraa.fun/v2/jupiter/trending',
+  { headers: { 'Payment-Request': paymentHeader } }
+);
+
+const { trending } = await response.json();
+```
+
+## Pricing Overview
+
+| Provider | Endpoint | Price (USD) |
+|----------|----------|-------------|
+| Binance | Ticker Price | Free |
+| Binance | OHLC | $0.002 |
+| Binance | Correlation | $0.002 |
+| Nansen | Token God Mode | $0.10 |
+| Nansen | Smart Money | $0.10 |
+| CoinGecko | Simple Price | $0.01 |
+| CoinGecko | On-chain | $0.01 |
+| DEXScreener | Aggregated | $0.03 |
+| RugCheck | Token Report | $0.002 |
+| BubbleMaps | Maps | $0.002 |
+| Jupiter | Swap Order | $0.002 |
+
+<Info>
+  All prices are per API request. Caching is implemented where appropriate to reduce costs.
+</Info>
+
+## Batch Requests
+
+Some integrations support batch requests:
+
+### Binance OHLC Batch
+
+```javascript
+import { fetchBinanceOhlcBatch } from './libs/binanceOhlcBatch.js';
+
+const tickers = 'BTCUSDT,ETHUSDT,SOLUSDT';
+const result = await fetchBinanceOhlcBatch(tickers, '1h');
+```
+
+## Integration Example
+
+```javascript
+import { PaymentClient } from '@faremeter/x402-client';
+
+class DataAggregator {
+  constructor(wallet) {
+    this.client = new PaymentClient({
+      network: 'solana',
+      wallet
+    });
+    this.baseUrl = 'https://api.syraa.fun/v2';
+  }
+
+  async getTokenAnalysis(tokenAddress) {
+    // Parallel data fetching from multiple sources
+    const [nansen, rugcheck, price, correlation] = await Promise.all([
+      this.getNansenData(tokenAddress),
+      this.getRugCheckReport(tokenAddress),
+      this.getPrice(tokenAddress),
+      this.getCorrelation('SOLUSDT')
+    ]);
+
+    return {
+      onChain: nansen,
+      security: rugcheck,
+      market: { price, correlation }
+    };
+  }
+
+  async getNansenData(tokenAddress) {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/nansen/token-god-mode?tokenAddress=${tokenAddress}`
+    );
+    return await response.json();
+  }
+
+  async getRugCheckReport(tokenAddress) {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/rugcheck/token-report?address=${tokenAddress}`
+    );
+    return await response.json();
+  }
+
+  async getPrice(symbol) {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/coingecko/simple-price?symbols=${symbol}&include_market_cap=true&include_24hr_vol=true`
+    );
+    return await response.json();
+  }
+
+  async getCorrelation(symbol) {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/binance/correlation?symbol=${symbol}&limit=10`
+    );
+    return await response.json();
+  }
+
+  async executeSwap(fromToken, toToken, amount) {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/jupiter/swap-order`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          from_token: fromToken,
+          to_token: toToken,
+          amount,
+          taker: this.wallet.publicKey.toString()
+        })
+      }
+    );
+    return await response.json();
+  }
+}
+
+// Usage
+const aggregator = new DataAggregator(yourWallet);
+
+// Get comprehensive token analysis
+const analysis = await aggregator.getTokenAnalysis(
+  'So11111111111111111111111111111111111111112'
+);
+
+console.log('Token Analysis:', analysis);
+```
+
+## Best Practices
+
+<Tip>
+  Combine multiple data sources for comprehensive analysis. Cross-reference Nansen on-chain data with RugCheck security reports.
+</Tip>
+
+1. **Parallel Requests**: Fetch from multiple providers simultaneously
+2. **Error Handling**: Implement fallbacks for each provider
+3. **Data Validation**: Verify data consistency across sources
+4. **Cost Management**: Cache frequently accessed data
+5. **Rate Limiting**: Respect provider rate limits
+
+## Data Freshness
+
+| Provider | Update Frequency | Cache Duration |
+|----------|------------------|----------------|
+| Binance | Real-time | 5 seconds |
+| Nansen | 5 minutes | No cache |
+| CoinGecko | 1 minute | 90 seconds |
+| DEXScreener | Real-time | 90 seconds |
+| RugCheck | On-demand | No cache |
+
+## Related Features
+
+- [Technical Indicators](/features/technical-indicators) - Uses Binance OHLC data
+- [Trading Signals](/features/trading-signals) - Powered by aggregated data
+- [Market Research](/features/market-research) - Integrates all data sources

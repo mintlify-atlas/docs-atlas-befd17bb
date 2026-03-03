@@ -1,0 +1,337 @@
+---
+title: 'Memecoin Screening'
+description: 'Discover and screen memecoins across multiple data sources and filters'
+---
+
+## Overview
+
+Memecoin screening capabilities aggregate data from multiple sources including DexScreener, Rugcheck, Jupiter, and more to help identify trending and potentially profitable memecoins.
+
+## Data Sources
+
+Memecoin screening uses data from:
+
+- **DexScreener** - Token profiles, boosts, and community takeovers
+- **Rugcheck** - Security scores and trending tokens  
+- **Jupiter** - Trending on Jupiter DEX
+- **Smart Money** - Institutional and whale movements
+- **Nansen** - Token analytics and holder data
+
+## Access Methods
+
+### Via Individual Endpoints
+
+Screen memecoins by calling multiple endpoints:
+
+```bash
+# Get DexScreener data
+curl https://api.syraa.fun/dexscreener
+
+# Get trending on Jupiter
+curl https://api.syraa.fun/trending-jupiter
+
+# Get token security report  
+curl https://api.syraa.fun/token-report?address=TOKEN_ADDRESS
+
+# Get smart money activity
+curl https://api.syraa.fun/smart-money
+```
+
+### Via Analytics Summary
+
+Get aggregated screening data:
+
+```bash
+curl https://api.syraa.fun/analytics/summary
+```
+
+Returns comprehensive data including:
+- DexScreener trending tokens
+- Token statistics from Rugcheck  
+- Jupiter trending
+- Smart money flows
+
+## Screening Criteria
+
+### Safety Filters
+
+**Rugcheck Score**: Less than 40 (low-medium risk)
+
+```javascript
+const safeTokens = tokens.filter(t => t.rugScore < 40);
+```
+
+**Liquidity**: Greater than $10,000
+
+```javascript
+const liquidTokens = tokens.filter(t => t.liquidity > 10000);
+```
+
+**Holder Count**: More than 100 holders
+
+```javascript
+const distributedTokens = tokens.filter(t => t.holders > 100);
+```
+
+### Trending Filters
+
+**DexScreener Boost**: Active boost campaign
+
+```javascript
+const boosted = dexscreener['token-boosts'].map(b => b.tokenAddress);
+```
+
+**Jupiter Trending**: Appears in trending list
+
+```javascript
+const jupiterTrending = await fetch('https://api.syraa.fun/trending-jupiter');
+```
+
+**Smart Money Inflow**: Positive net flow
+
+```javascript
+const smartMoneyBuys = netflow.tokens.filter(
+  t => t.signal === 'accumulation' && t.netFlow24h > 0
+);
+```
+
+## Screening Workflow
+
+### Step 1: Discover Tokens
+
+```javascript
+// Get all potential tokens
+const [dexData, jupData, smartData] = await Promise.all([
+  fetch('https://api.syraa.fun/dexscreener').then(r => r.json()),
+  fetch('https://api.syraa.fun/trending-jupiter').then(r => r.json()),
+  fetch('https://api.syraa.fun/smart-money').then(r => r.json())
+]);
+
+// Aggregate unique tokens
+const allTokens = new Set([
+  ...dexData['dexscreener/token-profiles'].map(t => t.tokenAddress),
+  ...jupData.trending.map(t => t.address),
+  ...smartData['smart-money/holdings'].positions.map(p => p.token)
+]);
+```
+
+### Step 2: Check Safety
+
+```javascript
+// Check each token with Rugcheck
+const safetyChecks = await Promise.all(
+  [...allTokens].map(async address => {
+    const report = await fetch(
+      `https://api.syraa.fun/token-report?address=${address}`
+    ).then(r => r.json());
+    
+    return {
+      address,
+      rugScore: report.data.rugScore,
+      liquidity: report.data.liquidity.total,
+      holders: report.data.holders.total,
+      safe: report.data.rugScore < 40 && 
+            report.data.liquidity.total > 10000 &&
+            report.data.holders.total > 100
+    };
+  })
+);
+
+const safeTokens = safetyChecks.filter(t => t.safe);
+```
+
+### Step 3: Rank by Signals
+
+```javascript
+function calculateScore(token, dexData, jupData, smartData) {
+  let score = 0;
+  
+  // DexScreener boost (+20 points)
+  const isBoosted = dexData['dexscreener/token-boosts']
+    .some(b => b.tokenAddress === token.address);
+  if (isBoosted) score += 20;
+  
+  // Jupiter trending (+30 points)
+  const isTrending = jupData.trending
+    .some(t => t.address === token.address);
+  if (isTrending) score += 30;
+  
+  // Smart money accumulation (+50 points)
+  const netflow = smartData['smart-money/netflow'].tokens
+    .find(t => t.symbol === token.symbol);
+  if (netflow?.signal === 'accumulation') score += 50;
+  
+  // Low rug score (+10 points)
+  if (token.rugScore < 20) score += 10;
+  
+  return score;
+}
+
+const rankedTokens = safeTokens
+  .map(token => ({
+    ...token,
+    score: calculateScore(token, dexData, jupData, smartData)
+  }))
+  .sort((a, b) => b.score - a.score);
+```
+
+### Step 4: Deep Dive Top Candidates
+
+```javascript
+// Get detailed analysis for top 5
+const topTokens = rankedTokens.slice(0, 5);
+
+for (const token of topTokens) {
+  const godMode = await fetch(
+    `https://api.syraa.fun/token-god-mode?tokenAddress=${token.address}`
+  ).then(r => r.json());
+  
+  console.log(`\n${token.symbol} (Score: ${token.score})`);
+  console.log(`Rug Score: ${token.rugScore}`);
+  console.log(`Smart Money Flow: $${godMode['flow-intelligence'].smartMoney.netFlow}`);
+  console.log(`Holders: ${godMode.holders.total}`);
+}
+```
+
+## Complete Screening Example
+
+```javascript
+async function screenMemecoins() {
+  // Fetch all data sources
+  const summary = await fetch('https://api.syraa.fun/analytics/summary')
+    .then(r => r.json());
+  
+  const { sections } = summary;
+  const dexData = sections.price.dexscreener.data;
+  const smartData = sections.onChain.smartMoney.data;
+  
+  // Extract token candidates
+  const candidates = [
+    ...dexData['dexscreener/token-boosts'].slice(0, 20),
+    ...dexData['dexscreener/token-profiles'].slice(0, 10)
+  ];
+  
+  // Screen each candidate
+  const screened = [];
+  
+  for (const candidate of candidates) {
+    try {
+      const report = await fetch(
+        `https://api.syraa.fun/token-report?address=${candidate.tokenAddress}`
+      ).then(r => r.json());
+      
+      // Apply filters
+      if (report.data.rugScore > 40) continue;
+      if (report.data.liquidity.total < 10000) continue;
+      if (report.data.holders.total < 100) continue;
+      
+      screened.push({
+        address: candidate.tokenAddress,
+        symbol: candidate.symbol,
+        rugScore: report.data.rugScore,
+        liquidity: report.data.liquidity.total,
+        holders: report.data.holders.total,
+        boost: candidate.boostAmount || 0
+      });
+    } catch (error) {
+      console.error(`Failed to screen ${candidate.symbol}:`, error);
+    }
+  }
+  
+  // Sort by boost amount and safety
+  screened.sort((a, b) => {
+    const scoreA = a.boost - (a.rugScore * 100);
+    const scoreB = b.boost - (b.rugScore * 100);
+    return scoreB - scoreA;
+  });
+  
+  return screened;
+}
+
+// Run screening
+const results = await screenMemecoins();
+console.log(`Found ${results.length} safe memecoins`);
+results.slice(0, 10).forEach((token, i) => {
+  console.log(`${i + 1}. ${token.symbol}`);
+  console.log(`   Rug Score: ${token.rugScore}`);
+  console.log(`   Liquidity: $${token.liquidity.toLocaleString()}`);
+  console.log(`   Holders: ${token.holders}`);
+  console.log(`   Boost: $${token.boost}`);
+});
+```
+
+## Screening Strategies
+
+### Conservative (Low Risk)
+
+- Rug score less than 20
+- Liquidity greater than $50,000  
+- More than 500 holders
+- Liquidity 80%+ locked
+- Smart money accumulation
+
+### Moderate (Medium Risk)
+
+- Rug score less than 40
+- Liquidity greater than $20,000
+- More than 200 holders
+- Liquidity 50%+ locked  
+- DexScreener boost active
+
+### Aggressive (High Risk)
+
+- Rug score less than 60
+- Liquidity greater than $5,000
+- More than 50 holders
+- Recent launch (less than 7 days)
+- High boost amount
+
+## Key Metrics
+
+### Safety Score
+
+```javascript
+function calculateSafetyScore(report) {
+  let safety = 100;
+  
+  safety -= report.rugScore; // Reduce by rug score
+  if (report.liquidity.percentage < 50) safety -= 20;
+  if (report.holders.total < 100) safety -= 10;
+  if (report.holders.top10Percentage > 50) safety -= 15;
+  
+  return Math.max(0, safety);
+}
+```
+
+### Opportunity Score  
+
+```javascript
+function calculateOpportunityScore(token, marketData) {
+  let opportunity = 0;
+  
+  if (token.boost > 10000) opportunity += 30;
+  if (marketData.smartMoneyNetFlow > 100000) opportunity += 40;
+  if (marketData.volume24h > 500000) opportunity += 20;
+  if (token.holders < 1000) opportunity += 10; // Early
+  
+  return opportunity;
+}
+```
+
+## Best Practices
+
+1. **Always Check Safety First**: Never skip Rugcheck analysis
+2. **Use Multiple Signals**: Combine boost, smart money, and trending
+3. **Monitor Liquidity**: Ensure sufficient liquidity for entry/exit  
+4. **Check Holder Distribution**: Avoid highly concentrated tokens
+5. **Track Smart Money**: Follow institutional accumulation
+6. **Set Risk Limits**: Define max rug score you'll accept
+7. **Diversify**: Don't put everything in one memecoin
+
+## Related Endpoints
+
+- [DexScreener](/api/dexscreener) - Token profiles and boosts
+- [Token Report](/api/token-report) - Rugcheck safety analysis
+- [Smart Money](/api/smart-money) - Institutional tracking  
+- [Token God Mode](/api/token-god-mode) - Deep token analytics
+- [Analytics Summary](/api/analytics-summary) - Aggregated market data

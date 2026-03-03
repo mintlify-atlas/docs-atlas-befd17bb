@@ -1,0 +1,184 @@
+---
+title: 'Trading Signals'
+description: 'AI-powered trading signals with entry, exit, and analysis recommendations'
+icon: 'signal'
+---
+
+## Overview
+
+Syra's Trading Signals feature provides AI-generated trading recommendations with precise entry points, price targets, and comprehensive market analysis. The system analyzes real-time market data to deliver actionable insights for both new and experienced traders.
+
+## How It Works
+
+The trading signal system leverages advanced AI models to analyze:
+
+- **Market Trends**: Current and historical price movements
+- **Volume Analysis**: Trading volume patterns and anomalies
+- **Technical Patterns**: Chart patterns and technical indicators
+- **Risk Assessment**: Stop-loss levels and risk-reward ratios
+
+### Signal Generation Process
+
+1. **Data Collection**: Real-time market data is gathered from multiple sources
+2. **AI Analysis**: Advanced models process patterns and indicators
+3. **Signal Creation**: AI generates entry/exit recommendations
+4. **Delivery**: Signals delivered via API with detailed reasoning
+
+## API Integration
+
+### Get Trading Signal
+
+Retrieve AI-generated trading signals for any supported token:
+
+```javascript
+// GET Request
+const response = await fetch('https://api.syraa.fun/v2/signal?token=solana', {
+  headers: {
+    'Payment-Request': paymentHeader // x402 payment required
+  }
+});
+
+const { signal } = await response.json();
+```
+
+```javascript
+// POST Request
+const response = await fetch('https://api.syraa.fun/v2/signal', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Payment-Request': paymentHeader
+  },
+  body: JSON.stringify({ token: 'bitcoin' })
+});
+```
+
+### Signal Response Structure
+
+```json
+{
+  "signal": {
+    "recommendation": "BUY",
+    "entryPrice": "$185.50",
+    "targets": {
+      "target1": "$195.00",
+      "target2": "$205.00",
+      "target3": "$220.00"
+    },
+    "stopLoss": "$175.00",
+    "analysis": "Strong bullish momentum detected...",
+    "confidence": "High",
+    "timeframe": "4H"
+  }
+}
+```
+
+## Supported Tokens
+
+Trading signals support all major cryptocurrencies including:
+
+- **Bitcoin (BTC)**
+- **Ethereum (ETH)**
+- **Solana (SOL)**
+- **And 40+ other major tokens**
+
+<Note>
+  Default token is `bitcoin` if no token parameter is specified.
+</Note>
+
+## Signal Types
+
+### Buy Signals
+Indicate optimal entry points for long positions with:
+- Entry price range
+- Multiple take-profit targets
+- Stop-loss recommendations
+- Risk-reward ratio
+
+### Sell Signals
+Suggest exit points or short positions with:
+- Sell price targets
+- Market condition analysis
+- Downside risk assessment
+
+### Hold Signals
+Recommend maintaining positions when:
+- Market is consolidating
+- Trend continuation expected
+- Risk-reward is unfavorable for entry/exit
+
+## Pricing
+
+Trading signals use Syra's x402 micropayment system:
+
+- **Cost**: $0.002 per signal (0.2 cents)
+- **Payment**: Automated via x402 protocol
+- **Network**: Solana USDC or Base USDC
+
+<Tip>
+  Signals are available on both production and development environments. Use `/v1/regular/signal` for free preview data on the landing page.
+</Tip>
+
+## Use Cases
+
+### Day Trading
+Get frequent signals for short-term price movements with precise entry/exit points.
+
+### Swing Trading
+Identify medium-term opportunities with detailed trend analysis and multiple targets.
+
+### Risk Management
+Use AI-generated stop-loss levels to protect your positions from adverse moves.
+
+### Portfolio Optimization
+Make informed decisions about position sizing based on confidence levels and risk-reward ratios.
+
+## Best Practices
+
+<Warning>
+  Trading signals are informational tools, not financial advice. Always conduct your own research and manage risk appropriately.
+</Warning>
+
+1. **Combine with Research**: Use signals alongside market research and sentiment analysis
+2. **Risk Management**: Never risk more than you can afford to lose
+3. **Position Sizing**: Use appropriate position sizes based on your portfolio
+4. **Multiple Timeframes**: Consider signals across different timeframes for confirmation
+5. **Track Performance**: Monitor signal accuracy over time to understand effectiveness
+
+## Integration Example
+
+Here's a complete example of integrating trading signals into your application:
+
+```javascript
+import { PaymentClient } from '@faremeter/x402-client';
+
+const paymentClient = new PaymentClient({
+  network: 'solana',
+  wallet: yourWallet
+});
+
+async function getSignal(token = 'solana') {
+  const response = await paymentClient.fetch(
+    `https://api.syraa.fun/v2/signal?token=${token}`
+  );
+  
+  if (response.ok) {
+    const { signal } = await response.json();
+    
+    console.log(`Recommendation: ${signal.recommendation}`);
+    console.log(`Entry: ${signal.entryPrice}`);
+    console.log(`Target 1: ${signal.targets.target1}`);
+    
+    return signal;
+  }
+}
+
+// Get signal for Solana
+const solSignal = await getSignal('solana');
+```
+
+## Related Features
+
+- [Market Research](/features/market-research) - Deep market analysis
+- [Sentiment Analysis](/features/sentiment-analysis) - Market sentiment tracking
+- [Technical Indicators](/features/technical-indicators) - Advanced technical analysis

@@ -1,0 +1,87 @@
+---
+title: 'API Overview'
+description: 'Introduction to the Syra API - Real-time crypto intelligence and x402 payment infrastructure'
+---
+
+## Welcome to Syra API
+
+The Syra API provides real-time cryptocurrency intelligence, market data, and AI-powered insights. Built on the **x402 payment protocol**, it enables micropayments for API calls using USDC on Solana.
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.syraa.fun
+```
+
+## Authentication
+
+Syra API uses the **x402 payment protocol** for API authentication and payment. See [Authentication](/api/authentication) for details.
+
+## Key Features
+
+### Core Data Endpoints
+- **News** - Latest crypto news and market updates
+- **Sentiment** - Market sentiment analysis over 30 days
+- **Events** - Upcoming crypto conferences and launches
+- **Signals** - AI-generated trading signals
+- **Analytics** - Comprehensive market analytics summary
+
+### Partner Integrations
+- **Nansen** - Smart money tracking and token analytics
+- **Rugcheck** - Token security and risk assessment
+- **DexScreener** - DEX market data and trending tokens
+- **Jupiter** - Solana DEX aggregation
+- **CoinGecko** - Token prices and market data
+- **Binance** - Price correlation and market data
+
+### Advanced Features
+- **Research Tools** - Web search and X/Twitter analysis
+- **Agent Tools** - AI agent integration with paid tool calling
+- **8004 Registry** - Trustless agent registry on Solana
+
+## Response Format
+
+All successful API responses return JSON data:
+
+```json
+{
+  "data": { ... },
+  "updatedAt": "2026-03-03T10:00:00.000Z"
+}
+```
+
+Error responses include:
+
+```json
+{
+  "error": "Error message",
+  "message": "Detailed error description"
+}
+```
+
+## Rate Limits
+
+API calls are metered through x402 payments. Each endpoint has a specific cost in USD, settled in USDC.
+
+## Support
+
+For API support, contact the Syra team or visit the documentation site.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Learn about x402 payment-based authentication
+  </Card>
+  <Card title="News Endpoint" icon="newspaper" href="/api/news">
+    Get latest crypto news and updates
+  </Card>
+  <Card title="Signals" icon="chart-line" href="/api/signals">
+    AI-powered trading signals
+  </Card>
+  <Card title="Token Analysis" icon="shield" href="/api/token-report">
+    Security analysis with Rugcheck
+  </Card>
+</CardGroup>

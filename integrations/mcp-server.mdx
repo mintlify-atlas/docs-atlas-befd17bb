@@ -1,0 +1,364 @@
+---
+title: "MCP Server"
+description: "Use Syra API tools in Cursor, Claude Desktop, and other AI assistants"
+---
+
+## Overview
+
+The **Syra MCP Server** exposes the Syra API as Model Context Protocol (MCP) tools for AI assistants. Access crypto news, events, sentiment, signals, research, token reports, memecoin screens, and more—directly from your AI chat in Cursor, Claude Desktop, or any MCP-compatible client.
+
+**Source Code:** Located in `mcp-server/` directory of the Syra monorepo
+
+## What is MCP?
+
+The [Model Context Protocol (MCP)](https://github.com/modelcontextprotocol/sdk) is a standard that allows AI assistants to access external tools and data sources. The Syra MCP server translates MCP tool calls into HTTP requests to the Syra API.
+
+### How It Works
+
+1. AI assistant (e.g., Cursor) calls a tool like `syra_v2_news`
+2. MCP server receives the request via **stdio** (standard input/output)
+3. Server builds API URL: `GET https://api.syraa.fun/news?ticker=BTC`
+4. Fetches data and returns response to the assistant
+
+## Features
+
+- **30+ MCP Tools** covering the full Syra API
+- **Configurable Base URL** — point to production or local API
+- **Optional Dev Routes** — bypass x402 payment during development
+- **stdio Transport** — runs as subprocess, no HTTP server needed
+- **Compatible** with Cursor, Claude Desktop, and any MCP client
+
+### Available Tool Categories
+
+<AccordionGroup>
+  <Accordion title="News & Events">
+    - `syra_v2_news` — Latest crypto news (optional ticker: BTC, ETH, general)
+    - `syra_v2_event` — Upcoming and recent crypto events
+  </Accordion>
+  
+  <Accordion title="Sentiment & Headlines">
+    - `syra_v2_sentiment` — Market sentiment analysis (30 days)
+    - `syra_v2_trending_headline` — Trending crypto headlines
+  </Accordion>
+  
+  <Accordion title="Trading Signals">
+    - `syra_v2_signal` — AI-generated trading signals with entry/exit recommendations
+  </Accordion>
+  
+  <Accordion title="Research & Browse">
+    - `syra_v2_research` — AI-powered deep research (quick/deep mode)
+    - `syra_v2_browse` — Web browsing and information extraction
+    - `syra_v2_x_search` — Deep research on X/Twitter trends
+    - `syra_v2_exa_search` — EXA AI web search
+  </Accordion>
+  
+  <Accordion title="Token & Chain Data">
+    - `syra_v2_token_report` — Rugcheck token report
+    - `syra_v2_token_risk_alerts` — Tokens above risk threshold
+    - `syra_v2_token_god_mode` — Nansen token deep research
+    - `syra_v2_bubblemaps_maps` — Holder/concentration maps
+    - `syra_v2_x_kol` — KOL analysis by Solana token address
+  </Accordion>
+  
+  <Accordion title="Analytics">
+    - `syra_v2_check_status` — API health check
+    - `syra_v2_sundown_digest` — Daily crypto roundup
+    - `syra_v2_gems` — Hidden gem projects trending on X
+    - `syra_v2_crypto_kol` — Insights from top crypto KOLs
+    - `syra_v2_smart_money` — Smart money tracking
+    - `syra_v2_dexscreener` — DEXScreener data
+    - `syra_v2_trending_jupiter` — Trending tokens on Jupiter
+    - `syra_v2_analytics_summary` — Full analytics summary
+  </Accordion>
+  
+  <Accordion title="Memecoin Screens">
+    - `syra_v2_memecoin_fastest_holder_growth` — Fastest growing memecoins
+    - `syra_v2_memecoin_most_mentioned_smart_money_x` — Smart money mentions
+    - `syra_v2_memecoin_accumulating_before_cex_rumors` — Pre-CEX accumulation
+    - `syra_v2_memecoin_strong_narrative_low_mcap` — Strong narrative + low mcap
+    - And 5 more memecoin screening tools...
+  </Accordion>
+</AccordionGroup>
+
+## Prerequisites
+
+| Requirement | Details |
+|-------------|----------|
+| **Node.js** | Version 18 or higher |
+| **Syra API** | Production (`https://api.syraa.fun`) or local (`http://localhost:3000`) |
+| **Payment** | Production endpoints use x402; local testing can use dev routes |
+| **MCP Client** | Cursor, Claude Desktop, or any stdio-compatible MCP client |
+
+## Installation
+
+<Steps>
+  <Step title="Clone the Repository">
+    Ensure you have the Syra monorepo (or at least the `mcp-server` folder):
+    
+    ```bash
+    cd mcp-server
+    ```
+  </Step>
+  
+  <Step title="Install Dependencies">
+    Install required packages and build TypeScript:
+    
+    ```bash
+    npm install
+    npm run build
+    ```
+    
+    This compiles TypeScript to `dist/index.js`.
+  </Step>
+  
+  <Step title="Verify Installation">
+    Test that the server starts (press Ctrl+C to stop):
+    
+    ```bash
+    node dist/index.js
+    ```
+    
+    The process should run without errors.
+  </Step>
+</Steps>
+
+## Configuration
+
+Configuration uses **environment variables**. Copy `.env.example` to `.env` and edit as needed.
+
+### Environment Variables
+
+| Variable | Description | Default | Example |
+|----------|-------------|---------|----------|
+| `SYRA_API_BASE_URL` | Base URL of Syra API (no trailing slash) | `https://api.syraa.fun` | `http://localhost:3000` |
+| `SYRA_USE_DEV_ROUTES` | Append `/dev` to API paths (local testing only) | not set | `true` |
+
+### Example: Local Testing (No Payment)
+
+```env
+SYRA_API_BASE_URL=http://localhost:3000
+SYRA_USE_DEV_ROUTES=true
+```
+
+### Example: Production
+
+```env
+SYRA_API_BASE_URL=https://api.syraa.fun
+# Do not set SYRA_USE_DEV_ROUTES for production
+```
+
+<Warning>
+  **Dev routes** should only be used with a local API during development. Do not use `SYRA_USE_DEV_ROUTES=true` with the production API.
+</Warning>
+
+## Setting Up in Cursor
+
+<Steps>
+  <Step title="Open Cursor Settings">
+    Go to **File → Preferences → Cursor Settings** (or search for "MCP").
+  </Step>
+  
+  <Step title="Add MCP Server">
+    Configure the server using **stdio** transport:
+    
+    **Windows:**
+    ```json
+    {
+      "mcpServers": {
+        "syra": {
+          "command": "node",
+          "args": ["D:\\business\\syra-monorepo\\mcp-server\\dist\\index.js"],
+          "env": {
+            "SYRA_API_BASE_URL": "http://localhost:3000",
+            "SYRA_USE_DEV_ROUTES": "true"
+          }
+        }
+      }
+    }
+    ```
+    
+    **macOS/Linux:**
+    ```json
+    {
+      "mcpServers": {
+        "syra": {
+          "command": "node",
+          "args": ["/home/user/syra-monorepo/mcp-server/dist/index.js"],
+          "env": {
+            "SYRA_API_BASE_URL": "http://localhost:3000",
+            "SYRA_USE_DEV_ROUTES": "true"
+          }
+        }
+      }
+    }
+    ```
+    
+    Replace the path with your actual `mcp-server/dist/index.js` location.
+  </Step>
+  
+  <Step title="Restart Cursor">
+    Restart Cursor or use "Reload MCP" to load the new server.
+  </Step>
+  
+  <Step title="Test the Integration">
+    In the AI chat, ask: "Get the latest crypto news" or "Fetch Syra news for BTC."
+    
+    The assistant will call `syra_v2_news` and return results.
+  </Step>
+</Steps>
+
+## Setting Up in Claude Desktop
+
+<Steps>
+  <Step title="Find Config File">
+    Locate your Claude Desktop MCP config:
+    
+    - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+    - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+  </Step>
+  
+  <Step title="Add Syra Server">
+    Edit the config file:
+    
+    ```json
+    {
+      "mcpServers": {
+        "syra": {
+          "command": "node",
+          "args": ["C:\\path\\to\\syra-monorepo\\mcp-server\\dist\\index.js"],
+          "env": {
+            "SYRA_API_BASE_URL": "http://localhost:3000",
+            "SYRA_USE_DEV_ROUTES": "true"
+          }
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Restart Claude Desktop">
+    Close and reopen Claude Desktop to load the server.
+  </Step>
+</Steps>
+
+## Example Prompts
+
+Once connected, try these prompts in your AI assistant:
+
+- "Get the latest crypto news."
+- "Fetch Syra news for BTC."
+- "What are the upcoming crypto events?"
+- "Get market sentiment for ETH."
+- "Give me the sundown digest."
+- "What's trending on Jupiter?"
+- "Get the full analytics summary."
+- "Deep research on Solana DeFi trends."
+- "Search X for Syra agent discussions."
+- "Rugcheck token report for address [address]."
+- "Binance correlation for ETHUSDT."
+- "Memecoins with fastest holder growth."
+
+## Payment & Dev Routes
+
+### Production API
+
+The production API at `https://api.syraa.fun` uses **x402** for many endpoints. Without valid payment headers, you'll receive **402 Payment Required** responses.
+
+The MCP server **does not** add payment headers—it only forwards requests. For production access:
+
+- Use the API Playground to handle payments
+- Implement x402 payment in your client setup
+- Or use local API with dev routes for testing
+
+### Dev Routes (Local Testing)
+
+When `SYRA_USE_DEV_ROUTES=true` and pointing to a local API:
+
+- Paths become: `/news` → `/news/dev`
+- Your local API can skip payment verification for `/dev` routes
+- **Only use with local/non-production APIs**
+
+| Scenario | Base URL | USE_DEV_ROUTES | Result |
+|----------|----------|----------------|--------|
+| Local testing | `http://localhost:3000` | `true` | Paths use `/dev`, may skip payment |
+| Production | `https://api.syraa.fun` | not set | No `/dev`, requires x402 payment |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Getting 402 Payment Required errors">
+    - Production API requires x402 payment
+    - Use local API with `SYRA_USE_DEV_ROUTES=true`
+    - Or implement x402 payment via API Playground
+  </Accordion>
+  
+  <Accordion title="Connection refused or timeout">
+    - Ensure Syra API is running and reachable at `SYRA_API_BASE_URL`
+    - For localhost, server must run on same machine
+    - Check firewall settings
+  </Accordion>
+  
+  <Accordion title="Tools not showing in Cursor/Claude">
+    - Restart the application or reload MCP
+    - Verify path to `dist/index.js` in config
+    - Run `node dist/index.js` manually to check for errors
+    - Ensure Node.js 18+ is installed
+  </Accordion>
+  
+  <Accordion title="Wrong API or dev routes not applied">
+    - Check `env` settings in MCP client config
+    - Server reads `process.env` at startup
+    - Verify both `SYRA_API_BASE_URL` and `SYRA_USE_DEV_ROUTES` values
+  </Accordion>
+</AccordionGroup>
+
+## Development
+
+### Source Files
+
+- **Source:** `src/index.ts`
+- **Build:** `npm run build` → outputs to `dist/`
+- **Dev mode:** `npm run dev` (uses `tsx` for live TypeScript)
+
+### Adding New Tools
+
+1. Open `src/index.ts`
+2. Add tool using `server.tool(name, description, schema, handler)`
+3. Define Zod schema for parameters
+4. Implement handler to call `fetchV2(path, params)`
+5. Run `npm run build` and test
+
+Example:
+
+```typescript
+server.tool(
+  "syra_v2_custom_tool",
+  "Description of what this tool does",
+  {
+    param1: z.string().optional().default("default_value"),
+  },
+  async ({ param1 }) => {
+    const { status, body } = await fetchV2("/custom-endpoint", { param1 });
+    return {
+      content: [{ type: "text", text: formatToolResult(status, body) }],
+    };
+  }
+);
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Playground" icon="flask" href="/integrations/api-playground">
+    Test endpoints with x402 payments
+  </Card>
+  <Card title="Telegram Bot" icon="paper-plane" href="/integrations/telegram">
+    Access Syra via Telegram
+  </Card>
+  <Card title="x402 Agent" icon="robot" href="/integrations/x402-agent">
+    Deploy autonomous agents
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Full API endpoint documentation
+  </Card>
+</CardGroup>

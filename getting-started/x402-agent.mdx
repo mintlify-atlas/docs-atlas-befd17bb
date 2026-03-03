@@ -1,0 +1,336 @@
+---
+title: x402 Agent
+description: Deploy Syra as an autonomous research agent on x402scan
+---
+
+Syra runs as an autonomous research agent on **x402scan** for automated research cycles, news monitoring, narrative tracking, and signal interpretation pipelines.
+
+## What is x402?
+
+**x402** is a payment protocol for AI agents and APIs. It enables:
+
+- **Pay-per-request** access to AI services
+- **Solana-based payments** for fast, low-cost transactions
+- **Autonomous agent workflows** that can pay for services
+- **Transparent pricing** via on-chain payment signatures
+
+## What is the Syra x402 Agent?
+
+The Syra x402 Agent is an autonomous version of Syra that:
+
+- Runs continuous research cycles
+- Monitors crypto news and narratives
+- Generates trading signals automatically
+- Tracks on-chain activity and smart money flows
+- Pays for API access using x402 protocol
+
+## Agent Registration (8004 Protocol)
+
+Syra is registered on the **8004 Trustless Agent Registry** on Solana, making it discoverable and verifiable.
+
+### Register Your Own Syra Agent
+
+You can register a new Syra agent instance on-chain:
+
+<Steps>
+  <Step title="Set Up Environment">
+    Configure your Solana signer in `.env`:
+    
+    ```env
+    # Option 1: JSON array of 64 bytes
+    SOLANA_PRIVATE_KEY="[1,2,3,...,64]"
+    
+    # Option 2: Base58-encoded secret key
+    AGENT_PRIVATE_KEY=<base58-encoded-key>
+    
+    # Pinata API key for IPFS metadata
+    PINATA_JWT=<your-pinata-jwt>
+    
+    # Optional: Agent image URI
+    SYRA_AGENT_IMAGE_URI=ipfs://...
+    
+    # Optional: Use devnet for testing
+    SOLANA_CLUSTER=devnet
+    ```
+  </Step>
+  
+  <Step title="Run Registration Script">
+    From the `api` directory:
+    
+    <CodeGroup>
+    ```bash Register Agent Only
+    cd api
+    npm run register-8004
+    ```
+    
+    ```bash Create Collection
+    cd api
+    npm run create-8004-collection
+    ```
+    
+    ```bash Register with Collection
+    cd api
+    npm run register-8004-with-collection
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Save Agent Asset">
+    The script outputs the agent asset NFT address:
+    
+    ```
+    Agent registered!
+    Asset: 8aJwH76QsQe5uEAxbFXha24toSUKjHxsdCk4BRuKERYx
+    Signature: <tx-signature>
+    ```
+    
+    Save this address for future updates.
+  </Step>
+</Steps>
+
+### Collection Setup
+
+Attach agents to a **Syra Agents** collection:
+
+```env
+# Add to existing collection
+SYRA_COLLECTION_POINTER=c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm
+
+# Or create new collection with custom metadata
+SYRA_COLLECTION_IMAGE_URI=ipfs://...
+SYRA_COLLECTION_EXTERNAL_URL=https://syraa.fun
+SYRA_COLLECTION_X_URL=https://x.com/syra_agent
+```
+
+## API-Based Agent Creation
+
+Create multiple agents programmatically via the API:
+
+### Endpoint
+
+```
+POST /8004/register-agent
+```
+
+<Warning>
+Requires x402 payment. Use `/8004/dev/register-agent` for local testing without payment.
+</Warning>
+
+### Request Body
+
+```json
+{
+  "name": "My Syra Agent",
+  "description": "Custom Syra research agent for DeFi",
+  "image": "ipfs://...",
+  "services": [
+    {
+      "type": "MCP",
+      "value": "https://api.syraa.fun"
+    }
+  ],
+  "skills": ["crypto-analysis", "trading-signals"],
+  "domains": ["finance", "defi"],
+  "x402Support": true,
+  "collectionPointer": "c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+}
+```
+
+### Response
+
+```json
+{
+  "asset": "<agent-nft-address>",
+  "registerSignature": "<tx-signature>",
+  "tokenUri": "ipfs://...",
+  "setCollectionSignature": "<tx-signature>"
+}
+```
+
+### Example with cURL
+
+```bash
+curl -X POST https://api.syraa.fun/8004/register-agent \
+  -H "Content-Type: application/json" \
+  -H "X-Payment: <x402-payment-signature>" \
+  -d '{
+    "name": "Syra DeFi Agent",
+    "description": "Specialized in DeFi trading intelligence",
+    "collectionPointer": "c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+  }'
+```
+
+## Agent Capabilities
+
+Once registered, your Syra agent can:
+
+### Autonomous Research
+
+- Run scheduled research cycles
+- Monitor specific tokens or narratives
+- Generate reports without manual intervention
+
+### Signal Generation
+
+- Create AI trading signals automatically
+- Store signals on-chain for transparency
+- Track signal performance over time
+
+### Data Collection
+
+- Aggregate news and events
+- Track smart money flows
+- Monitor social sentiment
+- Analyze on-chain activity
+
+### Payment Management
+
+- Pay for API calls using x402
+- Manage Solana wallet balance
+- Track spending and usage
+
+## Configuration Options
+
+### Environment Variables
+
+```env
+# Solana Configuration
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_CLUSTER=mainnet-beta  # or devnet
+
+# Agent Identity
+SOLANA_PRIVATE_KEY="[...]"
+SYRA_AGENT_ASSET=8aJwH76QsQe5uEAxbFXha24toSUKjHxsdCk4BRuKERYx
+
+# IPFS / Pinata
+PINATA_JWT=<your-jwt>
+
+# 8004 Registry
+8004_ATOM_ENABLED=true  # Enable reputation tracking
+```
+
+### Agent Metadata
+
+Customize your agent's metadata:
+
+- **Name** — Display name on x402scan
+- **Description** — What your agent does
+- **Image** — IPFS or HTTPS URL for agent avatar
+- **Services** — MCP endpoints and API URLs
+- **Skills** — OASF skill slugs (crypto-analysis, trading, research)
+- **Domains** — OASF domain slugs (finance, defi, trading)
+
+## Monitoring & Management
+
+### View on x402scan
+
+Once registered, view your agent at:
+
+```
+https://x402scan.io/agent/<agent-asset-address>
+```
+
+### Update Agent URI
+
+Update metadata after registration:
+
+```javascript
+import { setAgentUri } from '8004-solana';
+
+await setAgentUri({
+  signer,
+  asset: 'agent-asset-address',
+  newUri: 'ipfs://new-metadata'
+});
+```
+
+### Give Feedback
+
+Users can rate agents on-chain:
+
+```javascript
+import { giveFeedback } from '8004-solana';
+
+await giveFeedback({
+  signer,
+  asset: 'agent-asset-address',
+  rating: 5,
+  comment: 'Excellent research quality'
+});
+```
+
+## Use Cases
+
+### Automated Trading Research
+
+Deploy an agent that:
+1. Monitors specific token pairs
+2. Generates signals every 6 hours
+3. Posts findings to a webhook or Telegram channel
+
+### Portfolio Intelligence
+
+Create an agent that:
+1. Tracks your holdings
+2. Alerts on significant news or events
+3. Provides daily summaries
+
+### Memecoin Discovery
+
+Build an agent that:
+1. Runs memecoin screens continuously
+2. Identifies tokens with strong narratives
+3. Checks Rugcheck scores automatically
+
+### Institutional Research
+
+Deploy multiple agents that:
+1. Cover different sectors (DeFi, NFTs, Gaming)
+2. Aggregate research into a unified dashboard
+3. Share insights with team members
+
+## Best Practices
+
+<Tip>
+**Start on Devnet** — Test your agent configuration on Solana devnet before deploying to mainnet.
+</Tip>
+
+<Tip>
+**Monitor Wallet Balance** — Ensure your agent wallet has sufficient SOL for x402 payments.
+</Tip>
+
+<Tip>
+**Use Collections** — Group related agents in collections for better organization and discovery.
+</Tip>
+
+<Warning>
+**Secure Private Keys** — Never commit private keys to version control. Use environment variables and secure key management.
+</Warning>
+
+## Troubleshooting
+
+### Registration Fails
+
+- Verify Solana private key format (64-byte array or base58)
+- Ensure wallet has SOL for transaction fees
+- Check PINATA_JWT is valid
+- Try devnet first with `SOLANA_CLUSTER=devnet`
+
+### Payment Errors
+
+- Confirm agent wallet has sufficient SOL
+- Verify x402 payment signatures are included
+- Use dev routes for local testing without payment
+
+### Agent Not Appearing
+
+- Wait for transaction confirmation (usually < 30 seconds)
+- Check transaction signature on Solana explorer
+- Verify agent asset address is correct
+
+## Next Steps
+
+- Explore the [API Access](/getting-started/api-access) documentation
+- Try the [MCP Server](/getting-started/mcp-server) for local agent workflows
+- Read the [8004 Protocol documentation](https://8004.qnt.sh)
+- Join the community on [X (Twitter)](https://x.com/syra_agent)

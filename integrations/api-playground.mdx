@@ -1,0 +1,470 @@
+---
+title: "API Playground"
+description: "Interactive API testing tool with x402 payment support"
+---
+
+## Overview
+
+The **Syra API Playground** is an interactive web interface for testing and exploring the Syra API. Connect your Solana wallet, build requests, handle x402 payments, and inspect responses—all from your browser.
+
+**Playground URL:** [https://playground.syraa.fun](https://playground.syraa.fun)
+
+## Features
+
+- **Interactive Request Builder** — Select endpoints, configure parameters, and send requests
+- **x402 Payment Handling** — Connect Solana wallet for pay-per-request flows
+- **Response Inspector** — View JSON responses with syntax highlighting
+- **Request History** — Track your API calls and responses
+- **Quick Examples** — Pre-configured requests for common use cases
+- **Authentication Testing** — Test both paid and dev/free endpoints
+
+## Supported Endpoints
+
+The playground provides access to all Syra API endpoints:
+
+<AccordionGroup>
+  <Accordion title="Trading & Signals">
+    - **Signals** — AI-generated trading analysis (`/signal`)
+    - **Analytics Summary** — Full analytics overview (`/analytics/summary`)
+  </Accordion>
+  
+  <Accordion title="Market Data">
+    - **News** — Latest crypto news by ticker (`/news`)
+    - **Events** — Upcoming crypto events (`/event`)
+    - **Sentiment** — Market sentiment analysis (`/sentiment`)
+    - **Trending Headlines** — Hot crypto topics (`/trending-headline`)
+  </Accordion>
+  
+  <Accordion title="Research">
+    - **Deep Research** — AI-powered research (`/research`)
+    - **Web Browse** — Extract info from URLs (`/browse`)
+    - **X Search** — Twitter/X trend analysis (`/x-search`)
+    - **EXA Search** — AI web search (`/exa-search`)
+  </Accordion>
+  
+  <Accordion title="Token Analysis">
+    - **Token Report** — Rugcheck analysis (`/token-report`)
+    - **Token Risk Alerts** — High-risk token scanner (`/token-risk/alerts`)
+    - **Token God Mode** — Nansen deep research (`/token-god-mode`)
+    - **Token Statistics** — Rugcheck stats (`/token-statistic`)
+  </Accordion>
+  
+  <Accordion title="On-chain & DeFi">
+    - **Smart Money** — Wallet tracking (`/smart-money`)
+    - **DEXScreener** — DEX data (`/dexscreener`)
+    - **Jupiter Trending** — Trending on Jupiter (`/trending-jupiter`)
+    - **Bubblemaps** — Holder maps (`/bubblemaps/maps`)
+  </Accordion>
+  
+  <Accordion title="Memecoin Screens">
+    - **Fastest Holder Growth** — Growth rate analysis
+    - **Smart Money Mentions** — KOL tracking
+    - **Pre-CEX Accumulation** — Early accumulation signals
+    - **Strong Narrative + Low Mcap** — Narrative analysis
+    - **Experienced Devs** — Developer reputation
+    - **Whale Behavior** — Unusual whale activity
+    - **Trending on X not DEX** — Social vs. trading volume
+    - **Organic Traction** — Grassroots growth
+    - **Surviving Dumps** — Resilience metrics
+  </Accordion>
+  
+  <Accordion title="Binance Data">
+    - **Correlation** — Asset correlation (`/binance/correlation`)
+    - **Correlation Matrix** — Full matrix (`/binance/correlation-matrix`)
+  </Accordion>
+  
+  <Accordion title="Utilities">
+    - **Health Check** — API status (`/check-status`)
+    - **Sundown Digest** — Daily roundup (`/sundown-digest`)
+    - **Crypto KOL** — Influencer insights (`/crypto-kol`)
+    - **Hidden Gems** — Emerging projects (`/gems`)
+  </Accordion>
+</AccordionGroup>
+
+## Quick Start
+
+<Steps>
+  <Step title="Open the Playground">
+    Navigate to [playground.syraa.fun](https://playground.syraa.fun)
+  </Step>
+  
+  <Step title="Connect Wallet (Optional)">
+    For endpoints requiring x402 payment:
+    
+    1. Click **Connect Wallet**
+    2. Select your Solana wallet (Phantom, Solflare, etc.)
+    3. Approve the connection
+    
+    <Info>
+      Free/dev endpoints don't require wallet connection during development.
+    </Info>
+  </Step>
+  
+  <Step title="Build Your Request">
+    Use the **Request Builder**:
+    
+    1. Select an endpoint from the dropdown
+    2. Configure parameters (ticker, token, address, etc.)
+    3. Review the generated request
+  </Step>
+  
+  <Step title="Send Request">
+    Click **Send Request**:
+    
+    - **Free endpoints:** Returns data immediately
+    - **Paid endpoints:** Prompts for x402 payment, then returns data
+  </Step>
+  
+  <Step title="Inspect Response">
+    View the response in the inspector:
+    
+    - JSON syntax highlighting
+    - Status code and headers
+    - Response time metrics
+  </Step>
+</Steps>
+
+## x402 Payment Flow
+
+For endpoints gated by x402 payment:
+
+<Steps>
+  <Step title="Request Initiated">
+    You send a request to a paid endpoint (e.g., `/token-report`)
+  </Step>
+  
+  <Step title="Payment Required">
+    API returns **402 Payment Required** with payment details:
+    
+    ```json
+    {
+      "statusCode": 402,
+      "message": "Payment Required",
+      "paymentDetails": {
+        "amount": "0.001",
+        "currency": "SOL",
+        "recipient": "<wallet_address>"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Wallet Confirmation">
+    The playground prompts you to approve the payment in your wallet
+  </Step>
+  
+  <Step title="Payment Sent">
+    Transaction is broadcast to Solana blockchain
+  </Step>
+  
+  <Step title="Verification">
+    API verifies payment signature and on-chain transaction
+  </Step>
+  
+  <Step title="Data Delivered">
+    API returns requested data with **200 OK** status
+  </Step>
+</Steps>
+
+## Request Builder
+
+### Endpoint Selection
+
+Choose from categorized endpoints:
+
+- **Quick Select** — Common operations
+- **Full List** — All available endpoints
+- **Examples** — Pre-configured use cases
+
+### Parameter Configuration
+
+<Tabs>
+  <Tab title="News">
+    ```http
+    GET /news?ticker=BTC
+    ```
+    
+    **Parameters:**
+    - `ticker` (optional): `BTC`, `ETH`, `SOL`, or `general` (default)
+  </Tab>
+  
+  <Tab title="Signal">
+    ```http
+    GET /signal?token=bitcoin
+    ```
+    
+    **Parameters:**
+    - `token` (optional): Token name (default: `bitcoin`)
+  </Tab>
+  
+  <Tab title="Research">
+    ```http
+    GET /research?query=Solana+DeFi+trends&type=deep
+    ```
+    
+    **Parameters:**
+    - `query` (required): Research topic
+    - `type` (optional): `quick` or `deep`
+  </Tab>
+  
+  <Tab title="Token Report">
+    ```http
+    GET /token-report?address=<solana_address>
+    ```
+    
+    **Parameters:**
+    - `address` (required): Solana token contract address
+  </Tab>
+  
+  <Tab title="Token Risk Alerts">
+    ```http
+    GET /token-risk/alerts?rugScoreMin=80&limit=20
+    ```
+    
+    **Parameters:**
+    - `rugScoreMin` (optional): Minimum risk score (default: 80)
+    - `source` (optional): Data source
+    - `limit` (optional): Results limit (default: 20)
+  </Tab>
+</Tabs>
+
+## Response Inspector
+
+The response viewer provides:
+
+### JSON Formatting
+
+```json
+{
+  "status": "success",
+  "data": {
+    "token": "bitcoin",
+    "signal": {
+      "price": 67500,
+      "trend": "bullish",
+      "confidence": 0.85
+    }
+  },
+  "timestamp": "2026-03-03T12:00:00Z"
+}
+```
+
+### Response Metadata
+
+- **Status Code:** HTTP status (200, 402, 404, etc.)
+- **Response Time:** Request duration in ms
+- **Content Type:** Response format
+- **Headers:** Full response headers
+
+### Error Handling
+
+<Warning>
+  **Common Errors:**
+  
+  - **402 Payment Required** — Connect wallet and approve payment
+  - **400 Bad Request** — Check parameter format
+  - **404 Not Found** — Verify endpoint URL
+  - **500 Server Error** — API service issue (check status)
+</Warning>
+
+## Request History
+
+Track all your API calls:
+
+- **Timestamp** — When the request was made
+- **Endpoint** — Which API route was called
+- **Parameters** — Request configuration
+- **Status** — Success/failure indicator
+- **Payment** — Whether x402 payment was required
+
+### History Actions
+
+- **Replay** — Re-send the same request
+- **Edit** — Modify parameters and resend
+- **Export** — Save request/response as JSON
+- **Clear** — Remove history entries
+
+## Example Workflows
+
+### 1. Token Due Diligence
+
+<Steps>
+  <Step title="Get Token Report">
+    ```http
+    GET /token-report?address=<token_address>
+    ```
+    
+    Review Rugcheck analysis and risk score.
+  </Step>
+  
+  <Step title="Check Holder Distribution">
+    ```http
+    GET /bubblemaps/maps?address=<token_address>
+    ```
+    
+    Analyze holder concentration.
+  </Step>
+  
+  <Step title="Research Social Sentiment">
+    ```http
+    GET /x-kol?address=<token_address>
+    ```
+    
+    See what KOLs are saying.
+  </Step>
+  
+  <Step title="Get Trading Signal">
+    ```http
+    GET /signal?token=<token_name>
+    ```
+    
+    AI-generated entry/exit recommendations.
+  </Step>
+</Steps>
+
+### 2. Market Overview
+
+<Steps>
+  <Step title="Check Market Sentiment">
+    ```http
+    GET /sentiment?ticker=general
+    ```
+  </Step>
+  
+  <Step title="Get Latest News">
+    ```http
+    GET /news?ticker=general
+    ```
+  </Step>
+  
+  <Step title="View Analytics Summary">
+    ```http
+    GET /analytics/summary
+    ```
+    
+    Comprehensive market snapshot.
+  </Step>
+</Steps>
+
+### 3. Memecoin Screening
+
+<Steps>
+  <Step title="Fastest Growing">
+    ```http
+    GET /memecoin/fastest-holder-growth
+    ```
+  </Step>
+  
+  <Step title="Smart Money Activity">
+    ```http
+    GET /memecoin/most-mentioned-by-smart-money-x
+    ```
+  </Step>
+  
+  <Step title="Strong Narratives">
+    ```http
+    GET /memecoin/strong-narrative-low-market-cap
+    ```
+  </Step>
+</Steps>
+
+## Development Mode
+
+### Dev Routes (No Payment)
+
+For local testing without x402 payments:
+
+<Tabs>
+  <Tab title="Local API">
+    Point the playground to your local API:
+    
+    ```env
+    VITE_API_BASE_URL=http://localhost:3000
+    ```
+    
+    Dev routes available at `/endpoint/dev` (no payment required).
+  </Tab>
+  
+  <Tab title="Production API">
+    ```env
+    VITE_API_BASE_URL=https://api.syraa.fun
+    ```
+    
+    All requests require x402 payment.
+  </Tab>
+</Tabs>
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Build** | Vite, TypeScript |
+| **UI** | React, shadcn-ui, Tailwind CSS |
+| **Wallet** | @solana/wallet-adapter, Privy (Solana + Base + social) |
+| **Payment** | @x402/core |
+| **API Client** | Fetch API with x402 integration |
+
+## Security
+
+<Warning>
+  **Best Practices:**
+  
+  - Never share your wallet private keys
+  - Verify payment amounts before approving
+  - Use the playground on trusted networks only
+  - Review transaction details in your wallet
+</Warning>
+
+- **Wallet Security:** Your keys never leave your wallet extension
+- **HTTPS Only:** All requests use encrypted connections
+- **Payment Verification:** Transactions are verified on-chain
+- **No Storage:** Private data is not stored on servers
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Wallet won't connect">
+    - Ensure wallet extension is installed and unlocked
+    - Try refreshing the page
+    - Check browser console for errors
+    - Verify you're on a supported network (Solana mainnet)
+  </Accordion>
+  
+  <Accordion title="Payment transaction fails">
+    - Check wallet balance (sufficient SOL for transaction + fees)
+    - Verify network is not congested
+    - Try increasing transaction priority fee
+    - Ensure wallet is connected to mainnet-beta
+  </Accordion>
+  
+  <Accordion title="Request times out">
+    - Check API status at `/check-status`
+    - Verify your internet connection
+    - Try a simpler endpoint first
+    - Check request parameters are valid
+  </Accordion>
+  
+  <Accordion title="Invalid response format">
+    - Verify endpoint URL is correct
+    - Check parameter names and values
+    - Review API documentation for expected format
+    - Try the same request in dev mode (local API)
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Complete endpoint documentation
+  </Card>
+  <Card title="MCP Server" icon="plug" href="/integrations/mcp-server">
+    Use API in Cursor/Claude
+  </Card>
+  <Card title="x402 Agent" icon="robot" href="/integrations/x402-agent">
+    Deploy autonomous agents
+  </Card>
+  <Card title="n8n Workflows" icon="workflow" href="/integrations/n8n-workflows">
+    Automate with n8n
+  </Card>
+</CardGroup>

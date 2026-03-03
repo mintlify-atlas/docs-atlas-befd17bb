@@ -1,0 +1,273 @@
+---
+title: API Access
+description: Integrate Syra intelligence into your applications via the REST API
+---
+
+The Syra API provides programmatic access to trading signals, research, news, sentiment, and on-chain data. Use it to build custom trading bots, analytics dashboards, or integrate AI intelligence into your applications.
+
+## API Endpoint
+
+The production API is available at:
+
+```
+https://api.syraa.fun
+```
+
+## Authentication & Payment
+
+The Syra API uses **x402** for pay-per-request access. Most endpoints require payment via Solana.
+
+### Payment Methods
+
+- **x402 Payment Headers** — Include payment signature in request headers
+- **Solana Wallet** — Pay directly from your wallet
+- **API Playground** — Use the playground for wallet-based payments
+
+<Info>
+Endpoints return **402 Payment Required** without a valid payment header. Use the API Playground to handle payments automatically.
+</Info>
+
+## Quick Start with API Playground
+
+The easiest way to explore the API:
+
+<Steps>
+  <Step title="Visit API Playground">
+    Go to [playground.syraa.fun](https://playground.syraa.fun)
+  </Step>
+  
+  <Step title="Connect Wallet">
+    Connect your Solana wallet (Phantom, Solflare, etc.)
+  </Step>
+  
+  <Step title="Select an Endpoint">
+    Choose from:
+    - News & Events
+    - Trading Signals
+    - Research & Browse
+    - Token Data (Rugcheck, Nansen, Bubblemaps)
+    - Analytics Summary
+    - Memecoin Screens
+  </Step>
+  
+  <Step title="Send Request">
+    Click "Send" — the playground handles x402 payment automatically
+  </Step>
+</Steps>
+
+## Core Endpoints
+
+### News & Events
+
+```bash
+GET /news?ticker=BTC
+GET /event?ticker=general
+```
+
+Get latest crypto news and upcoming events.
+
+### Trading Signals
+
+```bash
+GET /signal?token=bitcoin
+```
+
+AI-generated trading signals with entry/exit recommendations.
+
+### Sentiment & Headlines
+
+```bash
+GET /sentiment?ticker=ETH
+GET /trending-headline?ticker=general
+```
+
+Market sentiment (30-day) and trending headlines.
+
+### Research & Browse
+
+```bash
+GET /research?query=solana%20defi&type=deep
+GET /browse?query=https://example.com
+GET /x-search?query=bitcoin%20sentiment
+```
+
+AI-powered deep research, web browsing, and X/Twitter search.
+
+### Token Data
+
+```bash
+GET /token-report?address=<solana_address>
+GET /token-statistic
+GET /token-risk/alerts?rugScoreMin=80
+```
+
+Rugcheck reports, token statistics, and risk alerts.
+
+### Analytics
+
+```bash
+GET /analytics/summary
+GET /smart-money
+GET /dexscreener
+GET /trending-jupiter
+```
+
+Full analytics including smart money, DEXScreener, and Jupiter trending.
+
+### Memecoin Screens
+
+```bash
+GET /memecoin/fastest-holder-growth
+GET /memecoin/most-mentioned-by-smart-money-x
+GET /memecoin/strong-narrative-low-market-cap
+```
+
+Screens for memecoins with specific characteristics.
+
+## Local Development
+
+For testing without payment, run the API locally:
+
+<Steps>
+  <Step title="Clone the Repository">
+    ```bash
+    git clone <syra-monorepo-url>
+    cd syra-monorepo/api
+    ```
+  </Step>
+  
+  <Step title="Install Dependencies">
+    <CodeGroup>
+    ```bash npm
+    npm install
+    ```
+    
+    ```bash yarn
+    yarn install
+    ```
+    
+    ```bash pnpm
+    pnpm install
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Configure Environment">
+    Set required environment variables:
+    
+    ```bash
+    # Solana RPC endpoint
+    SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+    
+    # MongoDB connection (if needed)
+    MONGODB_URI=mongodb://localhost:27017/syra
+    
+    # Other API keys as needed
+    ```
+  </Step>
+  
+  <Step title="Start the Server">
+    <CodeGroup>
+    ```bash development
+    npm run dev
+    ```
+    
+    ```bash production
+    npm start
+    ```
+    </CodeGroup>
+    
+    API runs on `http://localhost:3000` by default.
+  </Step>
+</Steps>
+
+### Dev Routes (No Payment)
+
+When running locally, use `/dev` routes to bypass x402 payment:
+
+```bash
+GET /news/dev?ticker=BTC
+GET /signal/dev?token=bitcoin
+```
+
+<Warning>
+Dev routes are only available when `NODE_ENV !== "production"`. Do not use in production.
+</Warning>
+
+## Integration Example
+
+### Node.js / JavaScript
+
+```javascript
+const response = await fetch('https://api.syraa.fun/news?ticker=BTC', {
+  headers: {
+    'X-Payment': '<x402-payment-signature>'
+  }
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+### Python
+
+```python
+import requests
+
+response = requests.get(
+    'https://api.syraa.fun/signal',
+    params={'token': 'bitcoin'},
+    headers={'X-Payment': '<x402-payment-signature>'}
+)
+
+data = response.json()
+print(data)
+```
+
+### cURL
+
+```bash
+curl -H "X-Payment: <x402-payment-signature>" \
+  "https://api.syraa.fun/analytics/summary"
+```
+
+## Response Format
+
+All endpoints return JSON. Successful responses (200 OK) include:
+
+```json
+{
+  "data": { ... },
+  "timestamp": "2026-03-03T12:00:00Z",
+  "status": "success"
+}
+```
+
+Error responses include:
+
+```json
+{
+  "error": "Error message",
+  "status": 402,
+  "payment": {
+    "required": true,
+    "amount": "0.001",
+    "currency": "SOL"
+  }
+}
+```
+
+## Rate Limits
+
+Rate limits apply based on endpoint and payment tier. The API returns `429 Too Many Requests` when limits are exceeded.
+
+<Tip>
+Use the [MCP Server](/getting-started/mcp-server) to access the API from AI assistants like Cursor and Claude Desktop without writing integration code.
+</Tip>
+
+## Next Steps
+
+- Explore all endpoints in the [API Playground](https://playground.syraa.fun)
+- Set up the [MCP Server](/getting-started/mcp-server) for AI assistant integration
+- Review the full API reference documentation
+- Join the community on [X (Twitter)](https://x.com/syra_agent) for updates

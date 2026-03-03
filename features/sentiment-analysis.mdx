@@ -1,0 +1,342 @@
+---
+title: 'Sentiment Analysis'
+description: 'Track market sentiment and social trends across crypto markets'
+icon: 'chart-line-up'
+---
+
+## Overview
+
+Syra's Sentiment Analysis provides real-time tracking of market sentiment across cryptocurrencies. By analyzing news, social media, and market data, it delivers quantitative sentiment scores that help traders understand market psychology.
+
+## Sentiment Metrics
+
+### Daily Sentiment Scores
+
+Get 30-day historical sentiment analysis for any cryptocurrency:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/sentiment?ticker=BTC', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { sentimentAnalysis } = await response.json();
+```
+
+**Response Structure:**
+
+```json
+{
+  "sentimentAnalysis": [
+    {
+      "date": "2026-03-03",
+      "ticker": {
+        "Positive": 245,
+        "Negative": 78,
+        "Neutral": 142,
+        "sentiment_score": 0.72,
+        "Sentiment_Score": 72
+      }
+    }
+  ]
+}
+```
+
+### General Market Sentiment
+
+Analyze overall crypto market sentiment:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/sentiment?ticker=general', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { sentimentAnalysis } = await response.json();
+```
+
+**General Sentiment Response:**
+
+```json
+{
+  "sentimentAnalysis": [
+    {
+      "date": "2026-03-03",
+      "general": {
+        "Positive": 1250,
+        "Negative": 340,
+        "Neutral": 890,
+        "sentiment_score": 0.68
+      },
+      "allTicker": {
+        "Positive": 3400,
+        "Negative": 1100,
+        "Neutral": 2300
+      }
+    }
+  ]
+}
+```
+
+## Data Sources
+
+Sentiment analysis aggregates data from:
+
+### News Articles
+- **CryptoNews API**: Latest crypto news
+- **Article Analysis**: Headline and content sentiment
+- **Publication Timing**: Real-time news impact
+
+### Social Media
+- **Twitter/X**: Trending topics and hashtags
+- **Community Forums**: Reddit and Discord activity
+- **Influencer Posts**: Key opinion leader sentiment
+
+### Market Reactions
+- **Price Movements**: Correlation with sentiment shifts
+- **Volume Changes**: Trading activity patterns
+- **Volatility Spikes**: Sentiment-driven volatility
+
+## Sentiment Scoring
+
+### Score Interpretation
+
+| Score Range | Sentiment | Market Implication |
+|-------------|-----------|--------------------|
+| 0.80 - 1.00 | Very Bullish | Strong buying pressure expected |
+| 0.60 - 0.79 | Bullish | Positive momentum |
+| 0.40 - 0.59 | Neutral | Consolidation likely |
+| 0.20 - 0.39 | Bearish | Negative pressure |
+| 0.00 - 0.19 | Very Bearish | Strong selling pressure |
+
+### Sentiment Components
+
+**Positive Sentiment**
+- Bullish news and announcements
+- Positive social media mentions
+- Upward price momentum
+- Partnership announcements
+
+**Negative Sentiment**
+- Regulatory concerns
+- Security incidents
+- Negative press coverage
+- Market crashes
+
+**Neutral Sentiment**
+- Informational content
+- Technical updates
+- Routine announcements
+- Market commentary
+
+<Note>
+  Sentiment scores are calculated using NLP models trained specifically on crypto market data.
+</Note>
+
+## API Endpoints
+
+### GET /v2/sentiment
+
+Retrieve sentiment analysis for a specific ticker or general market.
+
+**Query Parameters:**
+- `ticker` (optional): Ticker symbol (e.g., BTC, ETH, SOL) or "general"
+
+**Response:** Array of daily sentiment data for the last 30 days
+
+### POST /v2/sentiment
+
+Same functionality as GET, using POST body:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/sentiment', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Payment-Request': paymentHeader
+  },
+  body: JSON.stringify({ ticker: 'ETH' })
+});
+```
+
+## Caching
+
+<Info>
+  Sentiment data is cached for 90 seconds to optimize performance and reduce costs.
+</Info>
+
+The sentiment API implements intelligent caching:
+- **Cache Duration**: 90 seconds per ticker
+- **Cache Key**: Ticker symbol (normalized to lowercase)
+- **Automatic Refresh**: Cache expires after TTL
+
+## Pricing
+
+Sentiment analysis uses x402 micropayments:
+
+- **Cost**: Included in News API pricing
+- **Caching**: Reduces repeated query costs
+- **Payment**: Automated via x402 protocol
+
+## Use Cases
+
+### Trading Decisions
+
+Confirm entry/exit points with sentiment data:
+1. Check sentiment before entering positions
+2. Monitor sentiment shifts during trades
+3. Exit when sentiment reaches extremes
+4. Avoid trading during sentiment uncertainty
+
+### Risk Management
+
+Identify potential reversals:
+- **Extreme Bullishness**: Potential top signal
+- **Extreme Bearishness**: Possible bottom formation
+- **Sentiment Divergence**: Price vs. sentiment mismatch
+
+### Market Timing
+
+Time market entries based on sentiment cycles:
+1. Accumulate during bearish sentiment
+2. Take profits during euphoric sentiment
+3. Avoid FOMO when sentiment is extreme
+4. Buy fear, sell greed
+
+### Portfolio Management
+
+Adjust portfolio allocation:
+- **Bullish Sentiment**: Increase exposure
+- **Bearish Sentiment**: Reduce risk
+- **Neutral Sentiment**: Maintain current allocation
+
+## Integration Example
+
+```javascript
+import { PaymentClient } from '@faremeter/x402-client';
+
+class SentimentTracker {
+  constructor(wallet) {
+    this.client = new PaymentClient({
+      network: 'solana',
+      wallet
+    });
+  }
+
+  async getSentiment(ticker = 'general') {
+    const response = await this.client.fetch(
+      `https://api.syraa.fun/v2/sentiment?ticker=${ticker}`
+    );
+    
+    if (response.ok) {
+      const { sentimentAnalysis } = await response.json();
+      return this.analyzeSentiment(sentimentAnalysis);
+    }
+  }
+
+  analyzeSentiment(data) {
+    const latest = data[data.length - 1];
+    const sentiment = latest.ticker || latest.general;
+    
+    const score = sentiment.sentiment_score || 
+                  sentiment.Sentiment_Score / 100;
+    
+    return {
+      score,
+      interpretation: this.interpretScore(score),
+      positive: sentiment.Positive,
+      negative: sentiment.Negative,
+      neutral: sentiment.Neutral,
+      trend: this.calculateTrend(data)
+    };
+  }
+
+  interpretScore(score) {
+    if (score >= 0.80) return 'Very Bullish';
+    if (score >= 0.60) return 'Bullish';
+    if (score >= 0.40) return 'Neutral';
+    if (score >= 0.20) return 'Bearish';
+    return 'Very Bearish';
+  }
+
+  calculateTrend(data) {
+    if (data.length < 7) return 'Insufficient data';
+    
+    const recent = data.slice(-7);
+    const scores = recent.map(d => {
+      const s = d.ticker || d.general;
+      return s.sentiment_score || s.Sentiment_Score / 100;
+    });
+    
+    const avg = scores.reduce((a, b) => a + b) / scores.length;
+    const latest = scores[scores.length - 1];
+    
+    if (latest > avg * 1.1) return 'Improving';
+    if (latest < avg * 0.9) return 'Declining';
+    return 'Stable';
+  }
+}
+
+// Usage
+const tracker = new SentimentTracker(yourWallet);
+const btcSentiment = await tracker.getSentiment('BTC');
+console.log(`BTC Sentiment: ${btcSentiment.interpretation} (${btcSentiment.score})`);
+console.log(`Trend: ${btcSentiment.trend}`);
+```
+
+## Best Practices
+
+<Tip>
+  Combine sentiment analysis with technical indicators for stronger trading signals. Sentiment confirms or contradicts technical setups.
+</Tip>
+
+1. **Track Multiple Timeframes**: Monitor daily, weekly, and monthly sentiment
+2. **Compare Tickers**: Analyze relative sentiment across tokens
+3. **Watch for Extremes**: Extreme sentiment often precedes reversals
+4. **Sentiment Divergence**: Price moving opposite to sentiment is significant
+5. **Volume Confirmation**: High volume confirms sentiment-driven moves
+
+<Warning>
+  Sentiment is a contrarian indicator at extremes. Extreme bullishness can signal tops, extreme bearishness can signal bottoms.
+</Warning>
+
+## Advanced Analytics
+
+### Sentiment Momentum
+
+Calculate rate of change in sentiment:
+
+```javascript
+function calculateSentimentMomentum(data, period = 7) {
+  const recent = data.slice(-period);
+  const scores = recent.map(d => {
+    const s = d.ticker || d.general;
+    return s.sentiment_score || s.Sentiment_Score / 100;
+  });
+  
+  const firstScore = scores[0];
+  const lastScore = scores[scores.length - 1];
+  
+  return ((lastScore - firstScore) / firstScore) * 100;
+}
+```
+
+### Sentiment Correlation
+
+Analyze sentiment vs. price correlation:
+
+```javascript
+async function analyzeSentimentPriceCorrelation(ticker) {
+  const [sentiment, price] = await Promise.all([
+    getSentiment(ticker),
+    getPrice(ticker)
+  ]);
+  
+  // Calculate correlation coefficient
+  return calculateCorrelation(sentiment, price);
+}
+```
+
+## Related Features
+
+- [News & Events](/features/news-events) - Source of sentiment data
+- [Trading Signals](/features/trading-signals) - Sentiment-informed signals
+- [Market Research](/features/market-research) - Deep sentiment analysis

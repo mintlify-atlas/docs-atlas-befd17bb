@@ -1,0 +1,656 @@
+---
+title: "n8n Workflows"
+description: "Automate Syra intelligence with n8n workflow automation"
+---
+
+## Overview
+
+[n8n](https://n8n.io) is a powerful **workflow automation platform** that lets you connect APIs, databases, and services with a visual interface. Integrate Syra into n8n workflows to automate trading intelligence, research pipelines, and alert systems.
+
+**Use Cases:**
+
+- Automated daily market briefings
+- Token screening and alert workflows
+- Research automation with scheduled triggers
+- Multi-source intelligence aggregation
+- Custom notification systems (Discord, Slack, Email)
+
+## Why n8n + Syra?
+
+<CardGroup cols={2}>
+  <Card title="Visual Workflow Builder" icon="diagram-project">
+    No-code interface for building complex automations
+  </Card>
+  <Card title="500+ Integrations" icon="plug">
+    Connect Syra with Discord, Telegram, databases, and more
+  </Card>
+  <Card title="Scheduled Execution" icon="clock">
+    Run workflows on cron schedules or event triggers
+  </Card>
+  <Card title="Data Transformation" icon="code">
+    Process and format Syra API responses with JavaScript
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="n8n Installation">
+    Install n8n (choose one method):
+    
+    **Docker (recommended):**
+    ```bash
+    docker run -it --rm \
+      --name n8n \
+      -p 5678:5678 \
+      -v ~/.n8n:/home/node/.n8n \
+      n8nio/n8n
+    ```
+    
+    **npm:**
+    ```bash
+    npm install -g n8n
+    n8n start
+    ```
+    
+    **Desktop App:**
+    Download from [n8n.io/download](https://n8n.io/download)
+  </Step>
+  
+  <Step title="Access n8n">
+    Open [http://localhost:5678](http://localhost:5678) in your browser
+  </Step>
+  
+  <Step title="Syra API Access">
+    You'll need:
+    - Syra API base URL: `https://api.syraa.fun`
+    - For paid endpoints: Solana wallet with x402 payment capability
+    - For dev/testing: Local Syra API with dev routes
+  </Step>
+</Steps>
+
+## Quick Start: First Workflow
+
+Create a simple workflow to fetch daily crypto news:
+
+<Steps>
+  <Step title="Create New Workflow">
+    In n8n, click **+ New Workflow**
+  </Step>
+  
+  <Step title="Add Schedule Trigger">
+    1. Click **Add first step**
+    2. Search for **Schedule Trigger**
+    3. Configure: **Every day at 9:00 AM**
+  </Step>
+  
+  <Step title="Add HTTP Request Node">
+    1. Click **+** to add node
+    2. Search for **HTTP Request**
+    3. Configure:
+       - **Method:** GET
+       - **URL:** `https://api.syraa.fun/news?ticker=general`
+       - **Authentication:** None (for free endpoints)
+  </Step>
+  
+  <Step title="Add Discord/Slack/Email Node">
+    1. Add notification node of your choice
+    2. Format the message using Syra API response
+    3. Send to your channel/inbox
+  </Step>
+  
+  <Step title="Test & Activate">
+    1. Click **Test workflow**
+    2. Verify output
+    3. Click **Active** to enable scheduled execution
+  </Step>
+</Steps>
+
+## Example Workflows
+
+### 1. Daily Market Brief
+
+**Trigger:** Every day at 8:00 AM  
+**Actions:**
+
+1. Fetch sundown digest
+2. Get BTC signal
+3. Get ETH signal
+4. Fetch general news
+5. Format as report
+6. Send to Discord channel
+
+<Accordion title="View Workflow Configuration">
+  ```json
+  {
+    "nodes": [
+      {
+        "name": "Schedule",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 8 * * *"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Syra Sundown Digest",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/sundown-digest",
+          "method": "GET"
+        }
+      },
+      {
+        "name": "BTC Signal",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/signal?token=bitcoin",
+          "method": "GET"
+        }
+      },
+      {
+        "name": "Format Report",
+        "type": "n8n-nodes-base.code",
+        "parameters": {
+          "jsCode": "const digest = $('Syra Sundown Digest').first().json;\nconst btc = $('BTC Signal').first().json;\n\nreturn [{ json: { message: `**Daily Crypto Brief**\\n${digest.summary}\\n\\n**BTC Signal:** ${btc.signal}` } }];"
+        }
+      },
+      {
+        "name": "Send to Discord",
+        "type": "n8n-nodes-base.discord",
+        "parameters": {
+          "content": "={{ $json.message }}"
+        }
+      }
+    ]
+  }
+  ```
+</Accordion>
+
+### 2. Memecoin Screener Alert
+
+**Trigger:** Every hour  
+**Actions:**
+
+1. Fetch fastest holder growth memecoins
+2. Fetch smart money mentions
+3. Find overlaps (tokens in both lists)
+4. If overlaps found → Send alert
+
+<Accordion title="View Workflow Configuration">
+  ```json
+  {
+    "nodes": [
+      {
+        "name": "Schedule Hourly",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Fastest Growth",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/memecoin/fastest-holder-growth"
+        }
+      },
+      {
+        "name": "Smart Money",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/memecoin/most-mentioned-by-smart-money-x"
+        }
+      },
+      {
+        "name": "Find Overlaps",
+        "type": "n8n-nodes-base.code",
+        "parameters": {
+          "jsCode": "const growth = $('Fastest Growth').first().json.tokens;\nconst smartMoney = $('Smart Money').first().json.tokens;\nconst overlaps = growth.filter(g => smartMoney.some(s => s.address === g.address));\n\nif (overlaps.length > 0) {\n  return overlaps.map(token => ({ json: token }));\n}\nreturn [];"
+        }
+      },
+      {
+        "name": "Send Alert",
+        "type": "n8n-nodes-base.discord",
+        "parameters": {
+          "content": "🚨 High-potential memecoin detected: {{ $json.name }} ({{ $json.address }})"
+        }
+      }
+    ]
+  }
+  ```
+</Accordion>
+
+### 3. Token Research Pipeline
+
+**Trigger:** Webhook (manual or external trigger)  
+**Input:** Token address  
+**Actions:**
+
+1. Get token report (Rugcheck)
+2. Get holder distribution (Bubblemaps)
+3. Get KOL mentions (X)
+4. Get trading signal
+5. Aggregate into comprehensive report
+6. Save to database
+7. Send notification
+
+<Accordion title="View Workflow Configuration">
+  ```json
+  {
+    "nodes": [
+      {
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "parameters": {
+          "path": "research-token",
+          "method": "POST",
+          "responseMode": "lastNode"
+        }
+      },
+      {
+        "name": "Token Report",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/token-report?address={{ $json.tokenAddress }}"
+        }
+      },
+      {
+        "name": "Bubblemaps",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/bubblemaps/maps?address={{ $json.tokenAddress }}"
+        }
+      },
+      {
+        "name": "X KOL Analysis",
+        "type": "n8n-nodes-base.httpRequest",
+        "parameters": {
+          "url": "https://api.syraa.fun/x-kol?address={{ $json.tokenAddress }}"
+        }
+      },
+      {
+        "name": "Aggregate Report",
+        "type": "n8n-nodes-base.code",
+        "parameters": {
+          "jsCode": "const report = $('Token Report').first().json;\nconst bubbles = $('Bubblemaps').first().json;\nconst kol = $('X KOL Analysis').first().json;\n\nreturn [{\n  json: {\n    address: $('Webhook').first().json.tokenAddress,\n    rugScore: report.rugScore,\n    holderConcentration: bubbles.concentration,\n    kolSentiment: kol.sentiment,\n    timestamp: new Date().toISOString()\n  }\n}];"
+        }
+      },
+      {
+        "name": "Save to Database",
+        "type": "n8n-nodes-base.postgres",
+        "parameters": {
+          "operation": "insert"
+        }
+      }
+    ]
+  }
+  ```
+</Accordion>
+
+### 4. Sentiment Monitoring
+
+**Trigger:** Every 6 hours  
+**Actions:**
+
+1. Fetch sentiment for BTC, ETH, SOL
+2. Compare with previous sentiment (from database)
+3. If significant change (>20%) → Alert
+
+### 5. Research Automation
+
+**Trigger:** Daily at 6:00 PM  
+**Actions:**
+
+1. Get trending topics from `/gems`
+2. For each topic:
+   - Call `/research?query={topic}&type=deep`
+   - Extract key insights
+3. Compile into research digest
+4. Email to subscribers
+
+## Syra API Nodes
+
+Common HTTP Request configurations for Syra endpoints:
+
+### News
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.syraa.fun/news",
+  "qs": {
+    "ticker": "={{ $json.ticker || 'general' }}"
+  }
+}
+```
+
+### Signal
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.syraa.fun/signal",
+  "qs": {
+    "token": "={{ $json.token || 'bitcoin' }}"
+  }
+}
+```
+
+### Research
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.syraa.fun/research",
+  "qs": {
+    "query": "={{ $json.query }}",
+    "type": "deep"
+  }
+}
+```
+
+### Token Report
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.syraa.fun/token-report",
+  "qs": {
+    "address": "={{ $json.address }}"
+  }
+}
+```
+
+## Handling x402 Payments
+
+For paid endpoints, you need to handle x402 payments in n8n:
+
+<Steps>
+  <Step title="Use Function Node for Payment">
+    Add a **Function** node before the HTTP request to generate payment signature:
+    
+    ```javascript
+    // This is a simplified example
+    // You'll need to implement full x402 payment logic
+    
+    const { Connection, Keypair } = require('@solana/web3.js');
+    const { createPayment } = require('@x402/core');
+    
+    // Load wallet from credentials
+    const keypair = Keypair.fromSecretKey(
+      Buffer.from(process.env.SOLANA_PRIVATE_KEY)
+    );
+    
+    // Create payment signature
+    const payment = await createPayment({
+      endpoint: '/token-report',
+      amount: 0.001, // SOL
+      recipient: 'SYRA_TREASURY_ADDRESS',
+      signer: keypair
+    });
+    
+    return [{
+      json: {
+        paymentSignature: payment.signature
+      }
+    }];
+    ```
+  </Step>
+  
+  <Step title="Add Payment Header">
+    In the HTTP Request node:
+    
+    ```json
+    {
+      "headerParameters": {
+        "parameters": [
+          {
+            "name": "X-Payment",
+            "value": "={{ $json.paymentSignature }}"
+          }
+        ]
+      }
+    }
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  **Alternative:** Use local Syra API with dev routes (`/endpoint/dev`) to skip payments during development.
+</Warning>
+
+## Data Transformation
+
+Process Syra API responses with the **Code** node:
+
+### Extract Key Insights
+
+```javascript
+const response = $('Syra Signal').first().json;
+
+// Extract actionable data
+const insights = {
+  token: response.token,
+  price: response.marketOverview.price,
+  trend: response.technicalIndicators.trend,
+  rsi: response.technicalIndicators.rsi,
+  recommendation: response.actionPerspectives.bias,
+  confidence: response.aiInsights.confidence
+};
+
+return [{ json: insights }];
+```
+
+### Format for Discord
+
+```javascript
+const signal = $('Syra Signal').first().json;
+
+const message = `
+**${signal.token.toUpperCase()} Trading Signal**
+💰 Price: $${signal.marketOverview.price}
+📊 Trend: ${signal.technicalIndicators.trend}
+📈 RSI: ${signal.technicalIndicators.rsi}
+🎯 Bias: ${signal.actionPerspectives.bias}
+✅ Confidence: ${(signal.aiInsights.confidence * 100).toFixed(1)}%
+`;
+
+return [{ json: { content: message } }];
+```
+
+### Aggregate Multiple Sources
+
+```javascript
+const news = $('News').first().json;
+const sentiment = $('Sentiment').first().json;
+const signal = $('Signal').first().json;
+
+const aggregated = {
+  timestamp: new Date().toISOString(),
+  news: news.headlines.slice(0, 3),
+  sentiment: sentiment.overall,
+  signal: {
+    trend: signal.technicalIndicators.trend,
+    confidence: signal.aiInsights.confidence
+  }
+};
+
+return [{ json: aggregated }];
+```
+
+## Error Handling
+
+Add error handling to your workflows:
+
+### Retry on Failure
+
+```json
+{
+  "continueOnFail": true,
+  "retryOnFail": true,
+  "maxTries": 3,
+  "waitBetweenTries": 5000
+}
+```
+
+### Conditional Alerts
+
+```javascript
+// In Code node
+const response = $('HTTP Request').first();
+
+if (response.statusCode === 402) {
+  // Payment required
+  return [{
+    json: {
+      error: 'Payment required',
+      endpoint: response.url
+    }
+  }];
+} else if (response.statusCode >= 400) {
+  // Other error
+  return [{
+    json: {
+      error: 'Request failed',
+      status: response.statusCode,
+      message: response.body.message
+    }
+  }];
+}
+
+return response;
+```
+
+## Scheduling Options
+
+<Tabs>
+  <Tab title="Cron Expression">
+    ```
+    0 8 * * *       # Every day at 8 AM
+    0 */6 * * *     # Every 6 hours
+    0 9 * * 1       # Every Monday at 9 AM
+    */30 * * * *    # Every 30 minutes
+    ```
+  </Tab>
+  
+  <Tab title="Simple Interval">
+    - Every minute
+    - Every 5 minutes
+    - Every hour
+    - Every day
+    - Every week
+  </Tab>
+  
+  <Tab title="Webhook Trigger">
+    Trigger workflows via HTTP:
+    
+    ```bash
+    curl -X POST https://your-n8n.com/webhook/research-token \
+      -H "Content-Type: application/json" \
+      -d '{"tokenAddress": "<solana_address>"}'
+    ```
+  </Tab>
+</Tabs>
+
+## Integration Examples
+
+### Discord Bot
+
+1. Schedule trigger (daily)
+2. Fetch Syra sundown digest
+3. Format as embed
+4. Send via Discord webhook
+
+### Telegram Notifications
+
+1. Monitor memecoin screens
+2. Detect new opportunities
+3. Send alert via Telegram bot
+
+### Database Logging
+
+1. Fetch signals every hour
+2. Store in PostgreSQL
+3. Build historical dataset for analysis
+
+### Email Reports
+
+1. Aggregate daily intelligence
+2. Generate PDF report
+3. Email to subscribers
+
+## Best Practices
+
+<Tip>
+  **Recommendations:**
+  
+  - **Use environment variables** for API URLs and credentials
+  - **Implement error handling** with retry logic
+  - **Rate limit** your workflows to avoid API throttling
+  - **Test workflows manually** before activating schedules
+  - **Monitor execution logs** for failures
+  - **Use dev routes** for testing, then switch to production
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Workflow not triggering">
+    - Check workflow is **Active** (toggle in top-right)
+    - Verify cron expression is correct
+    - Check n8n server is running
+    - Review execution logs for errors
+  </Accordion>
+  
+  <Accordion title="API requests failing">
+    - Verify API URL is correct
+    - Check for 402 payment requirements
+    - Ensure parameters are properly formatted
+    - Review n8n HTTP request logs
+  </Accordion>
+  
+  <Accordion title="Data transformation errors">
+    - Use n8n's data view to inspect node outputs
+    - Test JavaScript code in Code node
+    - Check for null/undefined values
+    - Verify JSON path expressions
+  </Accordion>
+  
+  <Accordion title="Payment integration issues">
+    - Use dev routes for testing
+    - Verify Solana wallet has sufficient balance
+    - Check x402 payment signature format
+    - Review API payment error messages
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Complete endpoint documentation
+  </Card>
+  <Card title="x402 Agent" icon="robot" href="/integrations/x402-agent">
+    Deploy autonomous agents
+  </Card>
+  <Card title="API Playground" icon="flask" href="/integrations/api-playground">
+    Test endpoints interactively
+  </Card>
+  <Card title="MCP Server" icon="plug" href="/integrations/mcp-server">
+    Use Syra in AI assistants
+  </Card>
+</CardGroup>

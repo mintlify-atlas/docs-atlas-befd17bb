@@ -1,0 +1,499 @@
+---
+title: For Traders
+description: How traders use Syra for real-time signals, risk management, and market intelligence
+---
+
+# Syra for Traders
+
+Syra provides traders with real-time intelligence, actionable signals, and risk management tools to make informed trading decisions in the fast-paced crypto markets.
+
+## Quick Access via Telegram
+
+The fastest way for traders to access Syra is through the Telegram bot:
+
+<Steps>
+  <Step title="Start the Bot">
+    Open [Syra Trading Agent Bot](https://t.me/syra_trading_bot) and press **Start**.
+  </Step>
+  
+  <Step title="Check Supported Tokens">
+    Use `/list` to see all supported tokens and their tickers.
+  </Step>
+  
+  <Step title="Get Trading Signals">
+    Request a signal: `/signal bitcoin` or `/signal SOL`
+  </Step>
+  
+  <Step title="Monitor News">
+    Stay updated: `/news BTC` or `/top_mention today`
+  </Step>
+</Steps>
+
+<Tip>
+  Set up Telegram notifications to get alerts on major market moves or new signals for your watchlist tokens.
+</Tip>
+
+## Trading Signal Analysis
+
+Syra's AI-generated signals provide comprehensive trade setups:
+
+### Signal Components
+
+<Tabs>
+  <Tab title="Entry & Exit">
+    **Entry Price Recommendations**
+    - Optimal entry zone based on technical analysis
+    - Support/resistance levels consideration
+    - Volume profile analysis
+
+    **Take-Profit Targets**
+    - Multiple TP levels (TP1, TP2, TP3)
+    - Probability-weighted targets
+    - Risk/reward optimization
+
+    **Stop-Loss Placement**
+    - Calculated stop levels below key support
+    - ATR-based stop distance
+    - Maximum loss percentage
+
+    **Example Signal:**
+    ```json
+    {
+      "token": "BTC",
+      "recommendation": "BUY",
+      "entryZone": "$66,800 - $67,400",
+      "targets": [
+        { "level": "$69,500", "probability": 0.85 },
+        { "level": "$72,000", "probability": 0.65 },
+        { "level": "$75,800", "probability": 0.40 }
+      ],
+      "stopLoss": "$65,100",
+      "riskReward": 3.2,
+      "confidence": 78
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Technical Analysis">
+    **Key Indicators Analyzed:**
+
+    - **RSI (14):** Overbought/oversold conditions
+    - **MACD:** Momentum and trend direction
+    - **Moving Averages:** 50/100/200-day SMA/EMA
+    - **Bollinger Bands:** Volatility and breakout zones
+    - **Volume Profile:** Support/resistance based on volume
+
+    **Pattern Recognition:**
+    - Bull/bear flags and pennants
+    - Head and shoulders patterns
+    - Double tops/bottoms
+    - Triangle consolidations
+    - Divergences (bullish/bearish)
+
+    <Info>
+      All technical indicators are calculated using real-time data from Binance and DEXScreener.
+    </Info>
+  </Tab>
+  
+  <Tab title="Market Context">
+    **Broader Market Analysis:**
+
+    - **BTC correlation:** How the token correlates with Bitcoin
+    - **Market regime:** Trending vs. ranging market identification
+    - **Volatility state:** Current volatility vs. historical average
+    - **Sentiment backdrop:** Overall market sentiment (fear/greed)
+
+    **On-Chain Signals:**
+    - Smart money accumulation/distribution
+    - Whale wallet activity
+    - Exchange inflows/outflows
+    - Holder behavior patterns
+  </Tab>
+  
+  <Tab title="Risk Assessment">
+    **Risk Factors Evaluated:**
+
+    1. **Technical Risk**
+       - Proximity to major support/resistance
+       - Trend strength and direction
+       - Volatility levels
+
+    2. **Market Risk**
+       - Overall crypto market conditions
+       - Bitcoin dominance trends
+       - Correlation with major assets
+
+    3. **On-Chain Risk**
+       - Rugcheck score (for Solana tokens)
+       - Liquidity depth
+       - Holder concentration
+
+    4. **Position Risk**
+       - Suggested position size (% of portfolio)
+       - Maximum drawdown potential
+       - Time horizon expectations
+  </Tab>
+</Tabs>
+
+## Real-Time Market Monitoring
+
+Stay ahead with continuous market intelligence:
+
+### Price & Volume Alerts
+
+<CardGroup cols={2}>
+  <Card title="Price Movements" icon="arrow-trend-up">
+    Track significant price changes across your watchlist tokens.
+  </Card>
+  
+  <Card title="Volume Spikes" icon="chart-column">
+    Identify unusual volume activity that may precede major moves.
+  </Card>
+  
+  <Card title="Whale Activity" icon="whale">
+    Monitor large transactions and whale wallet movements.
+  </Card>
+  
+  <Card title="Smart Money" icon="brain">
+    Track what sophisticated traders are accumulating.
+  </Card>
+</CardGroup>
+
+### News Impact Analysis
+
+Stay informed on market-moving events:
+
+```bash
+# Get latest Bitcoin news
+GET /news?ticker=BTC
+
+# Response includes:
+{
+  "news": [
+    {
+      "title": "Bitcoin ETF sees $500M inflow",
+      "source": "CoinDesk",
+      "sentiment": "bullish",
+      "credibility": 0.92,
+      "impact": "high",
+      "timestamp": "2026-03-03T10:30:00Z"
+    }
+  ]
+}
+```
+
+## Risk Management Tools
+
+Effective risk management is crucial for trading success:
+
+### Position Sizing
+
+<Steps>
+  <Step title="Assess Signal Confidence">
+    Higher confidence (greater than 75%) → Larger position size
+    Lower confidence (less than 60%) → Smaller position or skip
+  </Step>
+  
+  <Step title="Calculate Risk per Trade">
+    **Rule of Thumb:** Risk 1-2% of portfolio per trade
+    
+    Example: $10,000 portfolio, 2% risk = $200 max loss
+  </Step>
+  
+  <Step title="Determine Position Size">
+    Position Size = (Max Loss) / (Entry - Stop Loss)
+    
+    Example: $200 / ($67,000 - $65,100) = 0.105 units
+  </Step>
+  
+  <Step title="Set Stop-Loss">
+    Always use the stop-loss level from Syra's signal. Never trade without a stop.
+  </Step>
+</Steps>
+
+### Portfolio Correlation
+
+Avoid overexposure to correlated assets:
+
+```bash
+# Get correlation matrix
+GET /binance/correlation-matrix
+
+# Identify highly correlated pairs (>0.8)
+# Diversify across uncorrelated or negatively correlated assets
+```
+
+<Warning>
+  Never risk more than 2% of your portfolio on a single trade. Even high-confidence signals can fail.
+</Warning>
+
+## Advanced Trading Workflows
+
+### Memecoin Trading Strategy
+
+For traders focusing on high-risk, high-reward memecoin opportunities:
+
+<Tabs>
+  <Tab title="Discovery">
+    **Find Early Opportunities:**
+
+    1. **Fastest Holder Growth**
+       ```bash
+       GET /memecoin/fastest-holder-growth
+       ```
+       Identify memecoins with viral adoption.
+
+    2. **Smart Money Mentions**
+       ```bash
+       GET /memecoin/most-mentioned-by-smart-money-x
+       ```
+       Follow what smart wallets are discussing.
+
+    3. **Trending on X, Not DEX**
+       ```bash
+       GET /memecoin/trending-on-x-not-dex
+       ```
+       Catch social momentum before price pumps.
+  </Tab>
+  
+  <Tab title="Due Diligence">
+    **Verify Safety Before Trading:**
+
+    1. **Rugcheck Token Report**
+       ```bash
+       GET /token-report?address={contract_address}
+       ```
+       Check risk score (aim for less than 30 for lower risk).
+
+    2. **Bubblemaps Holder Analysis**
+       ```bash
+       GET /bubblemaps/maps?address={contract_address}
+       ```
+       Visualize holder concentration (avoid if top 10 holders greater than 50%).
+
+    3. **Developer Background**
+       ```bash
+       GET /memecoin/by-experienced-devs
+       ```
+       Prefer tokens by proven developers.
+  </Tab>
+  
+  <Tab title="Entry & Exit">
+    **Execute with Discipline:**
+
+    1. **Entry Strategy**
+       - Wait for confirmation (volume, price action)
+       - Scale in: 50% initial, 50% on confirmation
+       - Never FOMO in at the top
+
+    2. **Take-Profit Ladder**
+       - TP1 (50% position): 2x return
+       - TP2 (30% position): 5x return
+       - TP3 (20% position): 10x+ (moon bag)
+
+    3. **Stop-Loss Management**
+       - Initial stop: -30% from entry
+       - Move to breakeven after TP1 hit
+       - Trail stop after TP2 hit
+  </Tab>
+  
+  <Tab title="Risk Controls">
+    **Memecoin-Specific Risk Management:**
+
+    - **Max allocation:** 5-10% of portfolio in memecoins total
+    - **Per-token max:** 2% per memecoin
+    - **Exit rules:** Take profits religiously, don't get greedy
+    - **Survival test:** Prefer coins that survived recent dumps
+       ```bash
+       GET /memecoin/surviving-market-dumps
+       ```
+
+    <Warning>
+      Memecoin trading is extremely high risk. Most memecoins go to zero. Only trade with capital you can afford to lose completely.
+    </Warning>
+  </Tab>
+</Tabs>
+
+### DeFi Trading Strategy
+
+For traders focusing on established DeFi tokens:
+
+<AccordionGroup>
+  <Accordion title="Trend Following">
+    **Identify Strong Trends:**
+
+    1. Get signal for target token (e.g., Solana)
+    2. Confirm trend with 50/100/200 SMA alignment
+    3. Wait for pullback to key moving average
+    4. Enter on bounce with tight stop below MA
+    5. Trail stop as trend continues
+
+    **Best for:** SOL, ETH, and major DeFi tokens with strong trends
+  </Accordion>
+  
+  <Accordion title="Mean Reversion">
+    **Capitalize on Oversold Bounces:**
+
+    1. Monitor RSI for oversold (less than 30) conditions
+    2. Confirm with Bollinger Band lower touch
+    3. Check sentiment for capitulation signs
+    4. Enter near support with stop below recent low
+    5. Target upper Bollinger Band or resistance
+
+    **Best for:** Volatile altcoins in ranging markets
+  </Accordion>
+  
+  <Accordion title="Breakout Trading">
+    **Trade Technical Breakouts:**
+
+    1. Identify consolidation patterns (triangles, flags)
+    2. Set alerts near breakout levels
+    3. Wait for volume confirmation on breakout
+    4. Enter on retest of breakout level
+    5. Target measured move distance
+
+    **Best for:** Tokens with clear chart patterns and catalysts
+  </Accordion>
+</AccordionGroup>
+
+## Day Trading Workflow
+
+Optimized daily routine for active traders:
+
+### Pre-Market Routine (Before Trading)
+
+<Steps>
+  <Step title="Market Overview">
+    Check overall market sentiment:
+    ```bash
+    GET /analytics/summary
+    ```
+    Review BTC/ETH trends, correlation matrix, smart money flows.
+  </Step>
+  
+  <Step title="News Scan">
+    Get latest news for major tokens:
+    ```bash
+    GET /news?ticker=general
+    GET /news?ticker=BTC
+    ```
+    Identify potential catalysts and risk events.
+  </Step>
+  
+  <Step title="Watchlist Signals">
+    Check signals for your watchlist:
+    ```bash
+    /signal SOL
+    /signal ETH
+    /signal BONK
+    ```
+    Note high-confidence setups (>70%).
+  </Step>
+  
+  <Step title="Risk Check">
+    Verify token safety for new positions:
+    ```bash
+    GET /token-report?address={address}
+    ```
+    Avoid tokens with Rugcheck score >50.
+  </Step>
+</Steps>
+
+### During Trading Session
+
+- Monitor price action on charting platform (TradingView, etc.)
+- Use Syra for confirmation on entry/exit decisions
+- Check `/smart-money` endpoint for whale activity
+- Set alerts for volume spikes and price targets
+
+### Post-Market Review
+
+- Review trades taken and outcomes
+- Check `/sundown-digest` for daily market summary
+- Update watchlist based on new opportunities
+- Plan next session's targets
+
+<Tip>
+  Keep a trading journal and log all signals followed. Track which signal types work best for your trading style.
+</Tip>
+
+## Integration with Trading Tools
+
+### TradingView Integration
+
+Use Syra signals alongside TradingView charts:
+
+1. Get Syra signal for token
+2. Open TradingView chart for visual confirmation
+3. Draw key levels (entry, targets, stop) on chart
+4. Set TradingView alerts at these levels
+5. Execute trade when conditions align
+
+### DEX Trading (Jupiter)
+
+For Solana DEX trading:
+
+```bash
+# Check trending tokens on Jupiter
+GET /trending-jupiter
+
+# Get signal for trending token
+GET /signal?token={token_name}
+
+# Execute swap on Jupiter with signal guidance
+```
+
+### Portfolio Tracking
+
+Monitor your portfolio performance:
+
+- Track positions and P&L in separate portfolio tracker
+- Use Syra's correlation matrix to assess portfolio balance
+- Rebalance based on changing market conditions
+- Use smart money tracking to validate holdings
+
+## Success Metrics
+
+Measure your trading performance:
+
+<CardGroup cols={2}>
+  <Card title="Win Rate" icon="percentage">
+    Target: >50% of trades profitable
+    Track which Syra confidence levels work best
+  </Card>
+  
+  <Card title="Risk/Reward" icon="scale-balanced">
+    Target: Average R/R >2:1
+    Only take trades with favorable R/R from Syra
+  </Card>
+  
+  <Card title="Drawdown" icon="chart-line-down">
+    Target: Max drawdown less than 20%
+    Use proper position sizing and stops
+  </Card>
+  
+  <Card title="Consistency" icon="chart-area">
+    Target: Positive returns 3+ months out of 4
+    Follow Syra signals systematically
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Start Trading" icon="rocket" href="/getting-started/telegram">
+    Get started with Syra's Telegram bot for instant signals.
+  </Card>
+  
+  <Card title="API Integration" icon="code" href="/api-reference/overview">
+    Integrate Syra into your automated trading workflows.
+  </Card>
+  
+  <Card title="For Analysts" icon="magnifying-glass-chart" href="/use-cases/analysts">
+    See how analysts use Syra for deeper research.
+  </Card>
+  
+  <Card title="Risk Management" icon="shield" href="/guides/risk-management">
+    Learn advanced risk management techniques.
+  </Card>
+</CardGroup>

@@ -1,0 +1,318 @@
+---
+title: Features
+description: Comprehensive overview of Syra's trading intelligence capabilities
+---
+
+# Features
+
+Syra provides a comprehensive suite of trading intelligence features designed for traders, analysts, and developers in the Solana ecosystem. All features are accessible via Telegram, API, and autonomous agent workflows.
+
+## Market Analysis
+
+Real-time market data and analytics from multiple sources.
+
+### Price & Volume Tracking
+
+- **Multi-source price feeds** — Binance, CoinGecko, DEXScreener integration
+- **Volume analysis** — 24h volume, trading activity, and flow metrics
+- **Volatility indicators** — Track market volatility and price swings
+- **Trend strength** — Identify bullish/bearish momentum across timeframes
+
+<Info>
+  Market data is aggregated from multiple sources to ensure accuracy and reduce single-point-of-failure risks.
+</Info>
+
+### Live Market Metrics
+
+```json
+{
+  "marketOverview": {
+    "price": "$67,234",
+    "volume24h": "$28.4B",
+    "volatility": "Medium",
+    "trendStrength": "Strong Bullish"
+  }
+}
+```
+
+## Technical Indicators
+
+Comprehensive technical analysis tools for informed trading decisions.
+
+<CardGroup cols={2}>
+  <Card title="RSI (Relative Strength Index)" icon="chart-line">
+    Identify overbought/oversold conditions with 14-period RSI calculations.
+  </Card>
+  
+  <Card title="MACD (Moving Average Convergence Divergence)" icon="wave-pulse">
+    Track momentum changes and potential trend reversals.
+  </Card>
+  
+  <Card title="Moving Averages (SMA/EMA)" icon="chart-simple">
+    50-day, 100-day, and 200-day moving averages for trend confirmation.
+  </Card>
+  
+  <Card title="Bollinger Bands" icon="arrows-left-right">
+    Measure market volatility and identify potential breakout zones.
+  </Card>
+</CardGroup>
+
+### Trading Signals
+
+AI-generated trading signals with entry/exit recommendations:
+
+- **Entry price recommendations** — Optimal entry points based on technical analysis
+- **Target levels** — Multiple take-profit targets with probability ratings
+- **Stop-loss suggestions** — Risk management with calculated stop levels
+- **Confidence scores** — AI-powered confidence ratings (0-100%)
+- **Risk/reward ratios** — Clear R/R analysis for each trade setup
+
+<Tip>
+  Access trading signals via `/signal bitcoin` in Telegram or `GET /signal?token=bitcoin` via API.
+</Tip>
+
+## On-Chain Intelligence
+
+Leverage blockchain data for deeper market insights.
+
+### Smart Money Tracking
+
+- **Net flow analysis** — Track smart money inflows and outflows
+- **Holdings monitoring** — Monitor what smart wallets are accumulating
+- **DEX trade tracking** — Real-time DEX transactions from notable addresses
+- **DCA patterns** — Identify dollar-cost averaging by sophisticated traders
+
+### Holder Analytics
+
+- **Fastest holder growth** — Memecoins with rapid holder expansion
+- **Whale behavior detection** — Unusual whale accumulation or distribution
+- **Holder concentration** — Bubblemaps integration for holder distribution visualization
+- **Smart money mentions** — Tokens mentioned by tracked smart money addresses
+
+<Note>
+  Smart money tracking uses Nansen integration and proprietary wallet classification algorithms.
+</Note>
+
+## AI Research & Insights
+
+Deep research capabilities powered by AI and multiple data sources.
+
+### Research Types
+
+<Tabs>
+  <Tab title="Quick Research">
+    Fast, focused research for immediate insights:
+
+    - **Response time:** 10-30 seconds
+    - **Depth:** Surface-level analysis with key highlights
+    - **Sources:** 5-10 sources
+    - **Use case:** Quick fact-checking, price updates, basic sentiment
+
+    ```bash
+    # Quick research example
+    GET /research?query=bitcoin&type=quick
+    ```
+  </Tab>
+  
+  <Tab title="Deep Research">
+    Comprehensive analysis with cited sources:
+
+    - **Response time:** 1-3 minutes
+    - **Depth:** Multi-faceted analysis with reasoning
+    - **Sources:** 20+ sources with citations
+    - **Use case:** Investment decisions, trend analysis, due diligence
+
+    ```bash
+    # Deep research example
+    GET /research?query=solana%20ecosystem&type=deep
+    ```
+  </Tab>
+</Tabs>
+
+### Web Intelligence
+
+- **Web browsing** — AI-powered extraction from URLs or search queries
+- **X/Twitter search** — Deep research on crypto trends and discussions
+- **EXA AI search** — Advanced web search with context awareness
+- **News aggregation** — Latest news from credible crypto sources
+
+## Sentiment & Narrative Analysis
+
+Understand market mood and trending narratives.
+
+### Sentiment Tracking
+
+- **30-day sentiment analysis** — Historical sentiment trends by token
+- **Trending headlines** — Most-discussed topics in crypto
+- **KOL insights** — Analysis of what top crypto influencers are discussing
+- **X/Twitter trends** — Real-time social media sentiment
+
+### News & Events
+
+- **Latest crypto news** — Aggregated news with credibility scoring
+- **Upcoming events** — Conferences, launches, and important dates
+- **Event impact analysis** — Historical performance around major events
+- **Narrative detection** — Identify emerging crypto narratives
+
+<CardGroup cols={2}>
+  <Card title="Sentiment API" icon="face-smile">
+    Access market sentiment data for any supported token.
+  </Card>
+  
+  <Card title="News API" icon="newspaper">
+    Get latest crypto news filtered by ticker (BTC, ETH, SOL, or general).
+  </Card>
+</CardGroup>
+
+## Risk Analysis
+
+Comprehensive risk assessment tools for informed decision-making.
+
+### Rugcheck Integration
+
+- **Token risk reports** — Comprehensive risk analysis for Solana tokens
+- **Risk alerts** — Tokens with high risk scores (configurable thresholds)
+- **Token statistics** — New, recent, trending, and verified tokens
+- **Contract analysis** — Smart contract security assessment
+
+### Risk Context
+
+- **Risk/reward awareness** — Clear R/R ratios for every signal
+- **Exposure considerations** — Position sizing recommendations
+- **Scenario analysis** — Best/worst case outcome projections
+- **Confidence levels** — AI-powered confidence ratings
+
+<Warning>
+  Always use Rugcheck integration to verify token safety before trading unknown Solana tokens.
+</Warning>
+
+## Memecoin Screening
+
+Specialized tools for memecoin discovery and analysis.
+
+<AccordionGroup>
+  <Accordion title="Fastest Holder Growth">
+    Identify memecoins with the fastest growing holder count — early signal of viral adoption.
+  </Accordion>
+  
+  <Accordion title="Smart Money Mentions">
+    Memecoins most mentioned by tracked smart money addresses on X/Twitter.
+  </Accordion>
+  
+  <Accordion title="Pre-CEX Accumulation">
+    Tokens showing accumulation patterns before CEX listing rumors.
+  </Accordion>
+  
+  <Accordion title="Strong Narrative + Low Mcap">
+    Memecoins with compelling narratives but still undervalued by market cap.
+  </Accordion>
+  
+  <Accordion title="Experienced Developers">
+    Memecoins launched by developers with proven track records.
+  </Accordion>
+  
+  <Accordion title="Unusual Whale Behavior">
+    Detection of unusual whale accumulation or distribution patterns.
+  </Accordion>
+  
+  <Accordion title="Trending on X, Not DEX">
+    Memecoins gaining social traction before DEX volume catches up.
+  </Accordion>
+  
+  <Accordion title="Organic Traction">
+    Memecoins showing genuine community growth vs. bot activity.
+  </Accordion>
+  
+  <Accordion title="Surviving Market Dumps">
+    Memecoins with resilient holder bases during market corrections.
+  </Accordion>
+</AccordionGroup>
+
+## Analytics Dashboard
+
+Comprehensive analytics aggregation for complete market overview.
+
+### Analytics Summary Endpoint
+
+Single API call returns:
+
+- **DEXScreener data** — Token profiles, community takeovers, boosted tokens
+- **Rugcheck statistics** — Token safety metrics across the ecosystem
+- **Jupiter trending** — Trending tokens on Jupiter DEX
+- **Smart money flows** — Net flow, holdings, and DEX trades
+- **Binance correlation** — Asset correlation matrix
+- **Memecoin screens** — All 9 memecoin screening algorithms
+
+```bash
+# Get complete analytics summary
+GET /analytics/summary
+```
+
+<Tip>
+  Use `/analytics/summary` to get a comprehensive market overview in a single request.
+</Tip>
+
+## Platform Integration
+
+Flexible access across multiple platforms and tools.
+
+<CardGroup cols={3}>
+  <Card title="Telegram Bot" icon="telegram">
+    Command-based interface with natural language support.
+  </Card>
+  
+  <Card title="x402 API" icon="bolt">
+    Pay-per-use API access with sub-cent payments.
+  </Card>
+  
+  <Card title="MCP Server" icon="server">
+    Use in Cursor, Claude Desktop, and other AI assistants.
+  </Card>
+  
+  <Card title="n8n Workflows" icon="diagram-project">
+    Automation integration for custom workflows.
+  </Card>
+  
+  <Card title="REST API" icon="code">
+    Standard REST API for custom integrations.
+  </Card>
+  
+  <Card title="Autonomous Agents" icon="robot">
+    x402scan integration for agent discovery.
+  </Card>
+</CardGroup>
+
+## Data Sources
+
+Syra aggregates data from premium providers:
+
+| Provider | Data Type | Use Case |
+|----------|-----------|----------|
+| **Binance** | Price, volume, correlation | Market data and asset correlation |
+| **CoinGecko** | Token data, prices, pools | Multi-chain token information |
+| **DEXScreener** | DEX analytics, TVL | Decentralized exchange metrics |
+| **Nansen** | On-chain analytics | Smart money and wallet profiling |
+| **Rugcheck** | Token safety | Risk assessment for Solana tokens |
+| **Bubblemaps** | Holder visualization | Token holder concentration |
+| **Jupiter** | DEX trending | Solana DEX activity |
+| **EXA AI** | Web search | Advanced web intelligence |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="How It Works" icon="gear" href="/how-it-works">
+    Learn about the architecture behind these features.
+  </Card>
+  
+  <Card title="Use Cases" icon="lightbulb" href="/use-cases/traders">
+    Explore how different users leverage Syra's features.
+  </Card>
+  
+  <Card title="Get Started" icon="rocket" href="/getting-started/telegram">
+    Start using these features today.
+  </Card>
+  
+  <Card title="API Reference" icon="book" href="/api-reference/overview">
+    Browse detailed API documentation.
+  </Card>
+</CardGroup>

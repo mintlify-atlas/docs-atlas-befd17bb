@@ -1,0 +1,430 @@
+---
+title: 'News & Events'
+description: 'Real-time crypto news, events, and trending headlines aggregation'
+icon: 'newspaper'
+---
+
+## Overview
+
+Stay informed with Syra's comprehensive News & Events tracking system. Access real-time crypto news, upcoming events, trending headlines, and daily market summaries from aggregated premium sources.
+
+## News API
+
+### Latest Crypto News
+
+Get the latest news articles for any cryptocurrency or general market:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/news?ticker=BTC', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { news } = await response.json();
+```
+
+**Response Structure:**
+
+```json
+{
+  "news": [
+    {
+      "title": "Bitcoin Reaches New All-Time High",
+      "url": "https://example.com/article",
+      "source": "CryptoNews",
+      "published": "2026-03-03T10:30:00Z",
+      "summary": "Bitcoin breaks through previous ATH...",
+      "sentiment": "positive",
+      "tickers": ["BTC"]
+    }
+  ]
+}
+```
+
+### News Categories
+
+**Ticker-Specific News**
+- News directly about specific tokens
+- Project announcements
+- Technical updates
+- Partnership news
+
+**General Market News**
+- Broad market trends
+- Regulatory updates
+- Industry developments
+- Macro economic factors
+
+<Note>
+  Use `ticker=general` to get general crypto market news not specific to any token.
+</Note>
+
+## Events Tracking
+
+### Upcoming Events
+
+Track conferences, launches, and important dates:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/event?ticker=ETH', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { event } = await response.json();
+```
+
+**Event Types:**
+
+```json
+{
+  "event": [
+    {
+      "date": "2026-04-15",
+      "ticker": {
+        "events": [
+          {
+            "title": "Ethereum DevCon 2026",
+            "type": "conference",
+            "location": "Singapore",
+            "impact": "high",
+            "description": "Annual Ethereum developer conference"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Event Categories
+
+- **Conferences**: Industry events and meetups
+- **Product Launches**: New product releases
+- **Network Upgrades**: Protocol updates and hard forks
+- **Token Unlocks**: Large token unlock events
+- **Earnings**: Company financial reports
+- **Regulatory**: Government decisions and deadlines
+
+## Trending Headlines
+
+### Top Stories
+
+Get the most trending crypto headlines:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/trending-headline?ticker=general', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { trendingHeadline } = await response.json();
+```
+
+**Trending Metrics:**
+- Social media engagement
+- Article views
+- Share velocity
+- Discussion volume
+
+## Sundown Digest
+
+### Daily Market Summary
+
+Get end-of-day market summaries:
+
+```javascript
+const response = await fetch('https://api.syraa.fun/v2/sundown-digest', {
+  headers: { 'Payment-Request': paymentHeader }
+});
+
+const { sundownDigest } = await response.json();
+```
+
+**Digest Contents:**
+
+```json
+{
+  "sundownDigest": [
+    {
+      "date": "2026-03-03",
+      "summary": "Markets closed higher today...",
+      "topMovers": [
+        { "ticker": "SOL", "change": "+12.5%" },
+        { "ticker": "AVAX", "change": "+8.3%" }
+      ],
+      "keyEvents": [
+        "Fed announces rate decision",
+        "Major DeFi protocol launches"
+      ],
+      "marketSentiment": "bullish"
+    }
+  ]
+}
+```
+
+## API Endpoints
+
+### News Endpoints
+
+**GET /v2/news**
+- Query params: `ticker` (optional, default: "general")
+- Returns: Latest news articles
+
+**POST /v2/news**
+- Body: `{ "ticker": "BTC" }`
+- Returns: Latest news articles
+
+### Event Endpoints
+
+**GET /v2/event**
+- Query params: `ticker` (optional, default: "general")
+- Returns: Upcoming events
+
+**POST /v2/event**
+- Body: `{ "ticker": "ETH" }`
+- Returns: Upcoming events
+
+### Trending Endpoints
+
+**GET /v2/trending-headline**
+- Query params: `ticker` (optional, default: "general")
+- Returns: Trending headlines
+
+**POST /v2/trending-headline**
+- Body: `{ "ticker": "general" }`
+- Returns: Trending headlines
+
+### Digest Endpoints
+
+**GET /v2/sundown-digest**
+- No parameters required
+- Returns: Daily market digest
+
+**POST /v2/sundown-digest**
+- No body required
+- Returns: Daily market digest
+
+## Caching & Performance
+
+<Info>
+  All news endpoints implement 90-second caching to optimize performance and reduce costs.
+</Info>
+
+**Cache Strategy:**
+- News: 90s cache per ticker
+- Sentiment: 90s cache per ticker
+- Events: 90s cache per ticker
+- Trending: 90s cache per ticker
+- Sundown: 90s global cache
+
+## Pricing
+
+News & Events use x402 micropayments:
+
+- **News**: $0.01 per request
+- **Events**: $0.01 per request
+- **Trending**: $0.01 per request
+- **Sundown Digest**: $0.01 per request
+- **Caching**: Reduces duplicate query costs
+
+<Tip>
+  Free preview data is available at `/v1/regular/news` for testing and landing page use.
+</Tip>
+
+## Data Sources
+
+News aggregation from premium sources:
+
+### CryptoNews API
+- **Coverage**: 100+ crypto news sites
+- **Update Frequency**: Real-time
+- **Categories**: General, ticker-specific, all-ticker
+- **Sentiment**: NLP-powered sentiment analysis
+
+### Event Calendars
+- Official project announcements
+- Conference schedules
+- Network upgrade timelines
+- Token unlock schedules
+
+### Social Aggregation
+- Twitter/X trending topics
+- Reddit discussions
+- Telegram activity
+- Discord announcements
+
+## Use Cases
+
+### Trading Alerts
+
+Monitor news for trading opportunities:
+
+```javascript
+async function monitorNewsAlerts(ticker) {
+  const { news } = await getNews(ticker);
+  
+  for (const article of news) {
+    if (article.sentiment === 'very_positive') {
+      console.log(`ALERT: Positive news for ${ticker}`);
+      console.log(article.title);
+      // Trigger buy signal
+    }
+  }
+}
+```
+
+### Event-Driven Strategy
+
+Plan trades around major events:
+
+```javascript
+async function planEventTrades(ticker) {
+  const { event } = await getEvents(ticker);
+  
+  const highImpactEvents = event.flatMap(e => 
+    e.ticker.events.filter(ev => ev.impact === 'high')
+  );
+  
+  console.log(`${highImpactEvents.length} high-impact events coming`);
+  // Adjust positions accordingly
+}
+```
+
+### Daily Brief
+
+Automated daily market summary:
+
+```javascript
+async function generateDailyBrief() {
+  const [digest, trending, generalNews] = await Promise.all([
+    getSundownDigest(),
+    getTrending('general'),
+    getNews('general')
+  ]);
+  
+  return {
+    summary: digest.sundownDigest[0].summary,
+    trending: trending.trendingHeadline.slice(0, 5),
+    topNews: generalNews.news.slice(0, 10)
+  };
+}
+```
+
+### Risk Monitoring
+
+Alert on negative news:
+
+```javascript
+async function monitorRiskNews(portfolio) {
+  for (const ticker of portfolio) {
+    const { news } = await getNews(ticker);
+    
+    const negativeNews = news.filter(n => 
+      n.sentiment === 'negative' ||
+      n.title.toLowerCase().includes('hack') ||
+      n.title.toLowerCase().includes('exploit')
+    );
+    
+    if (negativeNews.length > 0) {
+      console.log(`⚠️ Risk alert for ${ticker}`);
+      // Send notification
+    }
+  }
+}
+```
+
+## Integration Example
+
+```javascript
+import { PaymentClient } from '@faremeter/x402-client';
+
+class NewsTracker {
+  constructor(wallet) {
+    this.client = new PaymentClient({
+      network: 'solana',
+      wallet
+    });
+    this.baseUrl = 'https://api.syraa.fun/v2';
+  }
+
+  async getNews(ticker = 'general') {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/news?ticker=${ticker}`
+    );
+    return await response.json();
+  }
+
+  async getEvents(ticker = 'general') {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/event?ticker=${ticker}`
+    );
+    return await response.json();
+  }
+
+  async getTrending(ticker = 'general') {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/trending-headline?ticker=${ticker}`
+    );
+    return await response.json();
+  }
+
+  async getDailyDigest() {
+    const response = await this.client.fetch(
+      `${this.baseUrl}/sundown-digest`
+    );
+    return await response.json();
+  }
+
+  async getComprehensiveBrief(ticker) {
+    const [news, events, trending] = await Promise.all([
+      this.getNews(ticker),
+      this.getEvents(ticker),
+      this.getTrending(ticker)
+    ]);
+
+    return {
+      ticker,
+      latestNews: news.news.slice(0, 5),
+      upcomingEvents: events.event,
+      trendingStories: trending.trendingHeadline.slice(0, 3)
+    };
+  }
+}
+
+// Usage
+const tracker = new NewsTracker(yourWallet);
+const solBrief = await tracker.getComprehensiveBrief('SOL');
+console.log('Solana Brief:', solBrief);
+```
+
+## Best Practices
+
+<Warning>
+  Always verify important news from multiple sources before making trading decisions.
+</Warning>
+
+1. **Multi-Source Verification**: Cross-check important news
+2. **Timing Matters**: News impact decreases over time
+3. **Event Planning**: Mark calendars with high-impact events
+4. **Sentiment Context**: Consider news sentiment in analysis
+5. **Volume Correlation**: Verify news impact with volume spikes
+
+## Ticker Resolution
+
+Syra automatically resolves ticker symbols:
+
+```javascript
+// These all work:
+await getNews('bitcoin');  // Resolves to BTC
+await getNews('BTC');      // Direct symbol
+await getNews('btc');      // Case insensitive
+```
+
+**Supported formats:**
+- Full name ("bitcoin", "ethereum", "solana")
+- Symbol ("BTC", "ETH", "SOL")
+- CoinGecko ID ("bitcoin", "ethereum")
+
+## Related Features
+
+- [Sentiment Analysis](/features/sentiment-analysis) - Derived from news data
+- [Market Research](/features/market-research) - Deep news analysis
+- [Trading Signals](/features/trading-signals) - News-informed signals

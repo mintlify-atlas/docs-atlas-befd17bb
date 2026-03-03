@@ -1,122 +1,192 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Syra",
+  "theme": "aspen",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#8B5CF6",
+    "light": "#A78BFA",
+    "dark": "#7C3AED"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/ikhwanhsn/syra_agent"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/ikhwanhsn/syra_agent",
+      "x": "https://x.com/syra_agent"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Introduction",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "features",
+              "how-it-works"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Use Cases",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "use-cases/traders",
+              "use-cases/analysts",
+              "use-cases/developers"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Getting Started",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Quick Start",
             "pages": [
-              "api-reference/introduction"
+              "getting-started/telegram-bot",
+              "getting-started/web-dashboard",
+              "getting-started/api-access"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Setup Guides",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "getting-started/mcp-server",
+              "getting-started/x402-agent"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Features",
+        "groups": [
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/trading-signals",
+              "features/market-research",
+              "features/sentiment-analysis",
+              "features/news-events"
+            ]
+          },
+          {
+            "group": "Advanced Features",
+            "pages": [
+              "features/agent-marketplace",
+              "features/staking",
+              "features/prediction-game"
+            ]
+          },
+          {
+            "group": "Data Sources",
+            "pages": [
+              "features/data-integrations",
+              "features/technical-indicators"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/x402-payment"
+            ]
+          },
+          {
+            "group": "Market Data",
+            "pages": [
+              "api/news",
+              "api/events",
+              "api/sentiment",
+              "api/signals"
+            ]
+          },
+          {
+            "group": "Research & Analysis",
+            "pages": [
+              "api/research",
+              "api/browse",
+              "api/x-search"
+            ]
+          },
+          {
+            "group": "Token Intelligence",
+            "pages": [
+              "api/token-report",
+              "api/token-god-mode",
+              "api/smart-money",
+              "api/dexscreener"
+            ]
+          },
+          {
+            "group": "Memecoin Screens",
+            "pages": [
+              "api/memecoin-screens"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/analytics-summary",
+              "api/sundown-digest"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
+          {
+            "group": "Platforms",
+            "pages": [
+              "integrations/telegram",
+              "integrations/mcp-server",
+              "integrations/x402-agent"
+            ]
+          },
+          {
+            "group": "Developer Tools",
+            "pages": [
+              "integrations/api-playground",
+              "integrations/8004-registry"
+            ]
+          },
+          {
+            "group": "Automation",
+            "pages": [
+              "integrations/n8n-workflows"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Community",
+            "pages": [
+              "resources/support",
+              "resources/contributing"
+            ]
+          },
+          {
+            "group": "Legal",
+            "pages": [
+              "resources/license"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

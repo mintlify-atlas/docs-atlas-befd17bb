@@ -1,0 +1,340 @@
+---
+title: 'DexScreener API'
+description: 'Get aggregated DexScreener data including token profiles, community takeovers, ads, and boosted tokens'
+---
+
+## Endpoint
+
+```
+GET  /dexscreener
+POST /dexscreener
+```
+
+## Description
+
+Returns aggregated data from DexScreener including latest token profiles, community takeovers, active advertisements, and boosted tokens across multiple DEX platforms.
+
+## Pricing
+
+**$0.02 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+No parameters required. Returns all DexScreener data categories.
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/dexscreener"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/dexscreener \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+<ResponseField name="dexscreener/token-profiles" type="array">
+  Latest token profiles created on DexScreener
+</ResponseField>
+
+<ResponseField name="dexscreener/community-takeovers" type="array">
+  Community takeover listings and verified projects
+</ResponseField>
+
+<ResponseField name="dexscreener/ads" type="array">
+  Current advertisement listings on DexScreener
+</ResponseField>
+
+<ResponseField name="dexscreener/token-boosts" type="array">
+  Tokens with active boost campaigns
+</ResponseField>
+
+<ResponseField name="dexscreener/token-boosts-top" type="array">
+  Top boosted tokens by boost amount
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "dexscreener/token-profiles": [
+    {
+      "chainId": "solana",
+      "tokenAddress": "ABC123...",
+      "name": "Example Token",
+      "symbol": "EXM",
+      "description": "A new DeFi token on Solana",
+      "links": {
+        "twitter": "https://twitter.com/example",
+        "website": "https://example.com",
+        "telegram": "https://t.me/example"
+      },
+      "createdAt": "2026-03-03T09:00:00Z"
+    }
+  ],
+  "dexscreener/community-takeovers": [
+    {
+      "tokenAddress": "DEF456...",
+      "name": "Community Token",
+      "verified": true,
+      "takeover_date": "2026-03-01"
+    }
+  ],
+  "dexscreener/ads": [
+    {
+      "tokenAddress": "GHI789...",
+      "adType": "banner",
+      "impressions": 125000,
+      "clicks": 3450
+    }
+  ],
+  "dexscreener/token-boosts": [
+    {
+      "tokenAddress": "JKL012...",
+      "symbol": "BOOST",
+      "boostAmount": 5000,
+      "startsAt": "2026-03-03T00:00:00Z",
+      "endsAt": "2026-03-10T00:00:00Z"
+    }
+  ],
+  "dexscreener/token-boosts-top": [
+    {
+      "tokenAddress": "MNO345...",
+      "symbol": "TOP",
+      "boostAmount": 25000,
+      "rank": 1
+    }
+  ]
+}
+```
+
+## Error Responses
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Internal server error",
+  "message": "HTTP 503 Service Unavailable"
+}
+```
+
+## Data Categories
+
+### Token Profiles
+
+Newly created token profiles on DexScreener:
+
+- Basic token information (name, symbol, address)
+- Project description and links
+- Social media connections
+- Creation timestamp
+- Chain information
+
+### Community Takeovers
+
+Tokens with verified community management:
+
+- Community-led projects
+- Verification status
+- Takeover date and history
+- Community engagement metrics
+
+### Advertisements
+
+Active advertising campaigns:
+
+- Ad type (banner, featured, etc.)
+- Impression and click data
+- Campaign performance
+- Token being advertised
+
+### Token Boosts
+
+Tokens with active boost campaigns:
+
+- Boost amount (visibility boost)
+- Campaign duration (start/end dates)
+- Current boost status
+- Boost ranking
+
+### Top Boosted Tokens
+
+Highest boosted tokens:
+
+- Ranked by boost amount
+- Top visibility tokens
+- Most promoted projects
+
+## Data Fetching
+
+Aggregates data from multiple DexScreener endpoints:
+
+```javascript
+const responses = await Promise.all(
+  dexscreenerRequests.map(({ url }) => fetch(url))
+);
+
+const allData = await Promise.all(responses.map(r => r.json()));
+
+return {
+  "dexscreener/token-profiles": allData[0],
+  "dexscreener/community-takeovers": allData[1],
+  "dexscreener/ads": allData[2],
+  "dexscreener/token-boosts": allData[3],
+  "dexscreener/token-boosts-top": allData[4]
+};
+```
+
+## Code Example
+
+```javascript
+// Fetch DexScreener data
+const response = await fetch('https://api.syraa.fun/dexscreener');
+const data = await response.json();
+
+// Find new token launches
+const newProfiles = data['dexscreener/token-profiles'];
+console.log(`${newProfiles.length} new tokens profiled`);
+
+newProfiles.slice(0, 5).forEach(token => {
+  console.log(`${token.symbol} - ${token.name}`);
+  console.log(`  Chain: ${token.chainId}`);
+  console.log(`  Created: ${new Date(token.createdAt).toLocaleDateString()}`);
+  if (token.links?.twitter) {
+    console.log(`  Twitter: ${token.links.twitter}`);
+  }
+});
+
+// Check top boosted tokens
+const topBoosts = data['dexscreener/token-boosts-top'];
+console.log('\nTop Boosted Tokens:');
+topBoosts.forEach(token => {
+  console.log(`${token.rank}. ${token.symbol} - Boost: $${token.boostAmount}`);
+});
+
+// Find community takeovers
+const takeovers = data['dexscreener/community-takeovers'];
+const verified = takeovers.filter(t => t.verified);
+console.log(`\n${verified.length} verified community takeovers`);
+```
+
+## Analysis Strategies
+
+### New Launch Detection
+
+```javascript
+function findRecentLaunches(profiles, hours = 24) {
+  const cutoff = Date.now() - (hours * 60 * 60 * 1000);
+  
+  return profiles.filter(token => {
+    const created = new Date(token.createdAt).getTime();
+    return created > cutoff;
+  });
+}
+
+const recent = findRecentLaunches(data['dexscreener/token-profiles'], 24);
+console.log(`${recent.length} tokens launched in last 24 hours`);
+```
+
+### Boost Analysis
+
+```javascript
+function analyzeBoosts(boosts) {
+  const totalBoost = boosts.reduce((sum, b) => sum + b.boostAmount, 0);
+  const avgBoost = totalBoost / boosts.length;
+  
+  return {
+    total: boosts.length,
+    totalAmount: totalBoost,
+    averageBoost: avgBoost,
+    topBoost: Math.max(...boosts.map(b => b.boostAmount))
+  };
+}
+
+const boostStats = analyzeBoosts(data['dexscreener/token-boosts']);
+console.log('Boost Statistics:', boostStats);
+```
+
+### Community Verification Check
+
+```javascript
+function checkCommunityStatus(takeovers, tokenAddress) {
+  const takeover = takeovers.find(
+    t => t.tokenAddress === tokenAddress
+  );
+  
+  if (!takeover) return "No community takeover";
+  if (takeover.verified) return "Verified community project";
+  return "Community takeover (unverified)";
+}
+```
+
+## Marketing Insights
+
+### High Visibility Tokens
+
+Tokens with multiple marketing efforts:
+
+```javascript
+function findHighVisibilityTokens(data) {
+  const boosted = new Set(
+    data['dexscreener/token-boosts'].map(b => b.tokenAddress)
+  );
+  
+  const advertised = new Set(
+    data['dexscreener/ads'].map(a => a.tokenAddress)
+  );
+  
+  // Tokens with both boost and ads
+  const highVisibility = [...boosted].filter(addr => advertised.has(addr));
+  
+  return highVisibility.map(addr => {
+    const boost = data['dexscreener/token-boosts'].find(b => b.tokenAddress === addr);
+    return boost?.symbol || addr;
+  });
+}
+```
+
+## Best Practices
+
+1. **Track New Profiles**: Monitor for early launch opportunities
+2. **Boost as Signal**: High boost amounts show project confidence
+3. **Verify Community**: Prioritize verified community takeovers
+4. **Cross-Reference**: Combine with Rugcheck for safety
+5. **Ad Performance**: Check impression/click ratios
+6. **Regular Monitoring**: Data updates frequently
+
+## Use Cases
+
+### Early Launch Detection
+- Find tokens within hours of profile creation
+- Identify pre-launch marketing campaigns
+- Track launch preparation activities
+
+### Marketing Analysis
+- Measure advertising effectiveness
+- Compare boost strategies
+- Track competitor marketing
+
+### Community Verification
+- Verify community-led projects
+- Check takeover legitimacy
+- Assess community engagement
+
+### Trend Identification
+- Top boosted tokens signal interest
+- High ad spend shows conviction
+- New profiles indicate market activity
+
+## Related Endpoints
+
+- [Token Report](/api/token-report) - Security analysis via Rugcheck
+- [Smart Money](/api/smart-money) - Smart money tracking
+- [Analytics Summary](/api/analytics-summary) - Full market data

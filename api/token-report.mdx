@@ -1,0 +1,265 @@
+---
+title: 'Token Report (Rugcheck)'
+description: 'Get comprehensive token security and risk assessment from Rugcheck'
+---
+
+## Endpoint
+
+```
+GET  /token-report
+POST /token-report
+```
+
+## Description
+
+Returns detailed security and risk analysis for Solana tokens using Rugcheck. Includes rug score, liquidity analysis, holder distribution, and security warnings.
+
+## Pricing
+
+**$0.01 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+<ParamField query="address" type="string" required>
+  Solana token contract address (base58 format)
+</ParamField>
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/token-report?address=TOKEN_ADDRESS_HERE"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/token-report \
+  -H "Content-Type: application/json" \
+  -d '{"address": "TOKEN_ADDRESS_HERE"}'
+```
+
+## Response
+
+<ResponseField name="data" type="object">
+  Token report data from Rugcheck
+  
+  <Expandable title="Report object">
+    <ResponseField name="mint" type="string">
+      Token mint address
+    </ResponseField>
+    
+    <ResponseField name="rugScore" type="number">
+      Risk score (0-100, higher is riskier)
+    </ResponseField>
+    
+    <ResponseField name="risks" type="array">
+      Array of identified risk factors
+    </ResponseField>
+    
+    <ResponseField name="liquidity" type="object">
+      Liquidity pool information
+    </ResponseField>
+    
+    <ResponseField name="holders" type="object">
+      Holder distribution and concentration
+    </ResponseField>
+    
+    <ResponseField name="supply" type="object">
+      Token supply and distribution details
+    </ResponseField>
+    
+    <ResponseField name="markets" type="array">
+      Trading markets and DEX pairs
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "data": {
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "rugScore": 15,
+    "risks": [
+      {
+        "level": "info",
+        "name": "Low liquidity",
+        "description": "Liquidity is below $50,000",
+        "score": 10
+      },
+      {
+        "level": "warning",  
+        "name": "Recent creation",
+        "description": "Token created less than 30 days ago",
+        "score": 5
+      }
+    ],
+    "liquidity": {
+      "total": 45000,
+      "locked": 25000,
+      "percentage": 55.6
+    },
+    "holders": {
+      "total": 2341,
+      "top10Percentage": 42.3,
+      "concentration": "medium"
+    },
+    "supply": {
+      "total": 1000000000,
+      "circulating": 650000000,
+      "burned": 100000000
+    },
+    "markets": [
+      {
+        "name": "Raydium",
+        "liquidity": 35000,
+        "volume24h": 125000
+      }
+    ]
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request
+
+```json
+{
+  "error": "address is required"
+}
+```
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Internal server error",
+  "message": "HTTP 404 Not Found"
+}
+```
+
+## Risk Scoring
+
+Rugcheck risk score ranges from **0-100**:
+
+- **0-20**: Low risk (generally safe)
+- **21-40**: Medium risk (proceed with caution)  
+- **41-60**: High risk (significant concerns)
+- **61-80**: Very high risk (likely unsafe)
+- **81-100**: Extreme risk (probable rug pull)
+
+## Risk Factors
+
+### Common Risks
+
+- **Low Liquidity**: Insufficient liquidity for trading
+- **High Concentration**: Top holders control too much supply
+- **Unlocked Liquidity**: LP tokens not locked
+- **Mint Authority**: Developer can mint more tokens
+- **Freeze Authority**: Can freeze token accounts
+- **Recent Creation**: Token is very new
+- **Low Holder Count**: Few unique holders
+
+## Data Source
+
+Fetches from Rugcheck API:
+
+```javascript
+const response = await fetch(
+  `https://api.rugcheck.xyz/v1/tokens/${address}/report`,
+  {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  }
+);
+```
+
+## Code Example
+
+```javascript
+// Check token safety
+const address = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+
+const response = await fetch(
+  `https://api.syraa.fun/token-report?address=${address}`
+);
+
+const { data } = await response.json();
+
+console.log(`Rug Score: ${data.rugScore}/100`);
+console.log(`Risk Level: ${getRiskLevel(data.rugScore)}`);
+
+if (data.rugScore > 40) {
+  console.warn("HIGH RISK - Do not invest!");
+  data.risks.forEach(risk => {
+    console.log(`- ${risk.name}: ${risk.description}`);
+  });
+} else {
+  console.log("Risk appears manageable");
+}
+
+function getRiskLevel(score) {
+  if (score <= 20) return "Low";
+  if (score <= 40) return "Medium";
+  if (score <= 60) return "High";  
+  if (score <= 80) return "Very High";
+  return "Extreme";
+}
+```
+
+## Analysis Example
+
+```javascript
+// Analyze liquidity safety
+function analyzeLiquidity(report) {
+  const { liquidity, markets } = report.data;
+  
+  console.log(`Total Liquidity: $${liquidity.total.toLocaleString()}`);
+  console.log(`Locked: ${liquidity.percentage}%`);
+  
+  if (liquidity.total < 10000) {
+    console.warn("Extremely low liquidity - high slippage risk");
+  } else if (liquidity.percentage < 50) {
+    console.warn("Less than 50% liquidity locked - rug risk");
+  }
+  
+  markets.forEach(market => {
+    console.log(`${market.name}: $${market.liquidity} liquidity`);
+  });
+}
+
+// Analyze holder distribution  
+function analyzeHolders(report) {
+  const { holders } = report.data;
+  
+  console.log(`Total Holders: ${holders.total}`);
+  console.log(`Top 10 Control: ${holders.top10Percentage}%`);
+  
+  if (holders.top10Percentage > 50) {
+    console.warn("High concentration - whale manipulation risk");
+  }
+}
+```
+
+## Best Practices
+
+1. **Always Check Before Buying**: Never buy without checking report
+2. **Multiple Factors**: Don't rely on score alone, review all risks
+3. **Liquidity Locked**: Ensure significant liquidity is locked
+4. **Holder Distribution**: Avoid highly concentrated tokens
+5. **Authority Checks**: Prefer tokens with revoked mint/freeze
+6. **Cross-Reference**: Use with other research tools
+
+## Important Disclaimer
+
+**Token reports are informational only and not financial advice. Always DYOR (Do Your Own Research). High-risk tokens can still succeed, and low-risk tokens can still fail. Never invest more than you can afford to lose.**
+
+## Related Endpoints
+
+- [Token God Mode](/api/token-god-mode) - Nansen token analytics
+- [Smart Money](/api/smart-money) - Smart money tracking
+- [DexScreener](/api/dexscreener) - DEX market data

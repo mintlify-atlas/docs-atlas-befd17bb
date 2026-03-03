@@ -1,0 +1,261 @@
+---
+title: 'x402 Payment System'
+description: 'Technical details of the x402 payment protocol implementation in Syra API'
+---
+
+## Overview
+
+The x402 payment protocol enables micropayments for API calls using cryptocurrency. Syra implements x402 v2 with USDC on Solana.
+
+## Protocol Version
+
+Syra uses **x402 v2** with the following features:
+
+- Real-time payment settlement
+- USDC (SPL token) on Solana
+- Automatic facilitator fallback
+- Payment-Response headers
+- Discoverable endpoints on x402scan
+
+## Payment Flow
+
+### 1. Request Payment
+
+Client makes request to paid endpoint:
+
+```bash
+curl -X POST https://api.syraa.fun/news \
+  -H "Content-Type: application/json" \
+  -d '{"ticker": "BTC"}'
+```
+
+### 2. Payment Required
+
+Server responds with payment requirement:
+
+```javascript
+{
+  price: 0.01, // USD
+  description: "Get latest crypto news and market updates",
+  method: "POST",
+  discoverable: true,
+  resource: "/news"
+}
+```
+
+### 3. Settlement
+
+Payment is settled automatically:
+
+- Deducted from agent wallet
+- Transferred in USDC on Solana
+- Transaction confirmed on-chain
+- Payment-Response header included
+
+### 4. Response Delivery
+
+API returns data with payment confirmation:
+
+```http
+HTTP/1.1 200 OK
+Payment-Response: {encoded_settlement}
+
+{"news": [...]}
+```
+
+## Payment Options
+
+Endpoints define payment options:
+
+```javascript
+requirePayment({
+  price: X402_API_PRICE_NEWS_USD,
+  description: "Get latest crypto news and market updates",
+  method: "GET",
+  discoverable: true,
+  inputSchema: {
+    queryParams: {
+      ticker: { 
+        type: "string", 
+        required: false, 
+        description: "Ticker (e.g. BTC, ETH) or 'general'" 
+      }
+    }
+  },
+  outputSchema: { 
+    news: { 
+      type: "array", 
+      description: "News articles" 
+    } 
+  }
+})
+```
+
+## Settlement Methods
+
+### Standard Settlement
+
+```javascript
+await settlePaymentAndSetResponse(res, req);
+```
+
+### Fallback Settlement
+
+Handles facilitator failures gracefully:
+
+```javascript
+const settle = await settlePaymentWithFallback(payload, accepted);
+
+if (!settle?.success && !isFacilitatorFailure) {
+  throw new Error(settle?.errorReason || "Settlement failed");
+}
+
+// Continue even if facilitator fails
+const effectiveSettle = settle?.success ? settle : { success: true };
+res.setHeader("Payment-Response", encodePaymentResponseHeader(effectiveSettle));
+```
+
+## Buyback Mechanism
+
+After successful payment, automatic buyback is triggered:
+
+```javascript
+runBuybackForRequest(req);
+```
+
+This supports the SYRA token economy.
+
+## Pricing Configuration
+
+Prices are defined in configuration:
+
+```javascript
+// x402Pricing.js
+export const X402_API_PRICE_NEWS_USD = 0.01;
+export const X402_API_PRICE_NANSEN_USD = 0.05;
+export const X402_API_PRICE_ANALYTICS_SUMMARY_USD = 0.02;
+export const X402_API_PRICE_DEXSCREENER_USD = 0.02;
+```
+
+## Effective Pricing
+
+Development wallets may receive discounted pricing:
+
+```javascript
+const effectivePrice = getEffectivePriceUsd(tool.priceUsd, connectedWallet);
+```
+
+## Discovery
+
+All discoverable endpoints are indexed on x402scan:
+
+- Endpoint path and method
+- Price in USD
+- Input/output schemas
+- Description and documentation
+
+## Agent Integration
+
+### Balance Check
+
+Before calling tools:
+
+```javascript
+const balanceResult = await getAgentUsdcBalance(anonymousId);
+const { usdcBalance } = balanceResult;
+
+if (usdcBalance < requiredUsdc) {
+  return {
+    success: false,
+    insufficientBalance: true,
+    message: "Insufficient USDC balance"
+  };
+}
+```
+
+### Tool Call with Payment
+
+```javascript
+const result = await callX402V2WithAgent({
+  anonymousId,
+  url: `https://api.syraa.fun${tool.path}`,
+  method: tool.method,
+  query: method === 'GET' ? params : {},
+  body: method === 'POST' ? params : undefined
+});
+
+if (!result.success) {
+  return {
+    success: false,
+    error: result.error,
+    budgetExceeded: result.budgetExceeded
+  };
+}
+```
+
+## Error Handling
+
+### Payment Errors
+
+```javascript
+try {
+  await settlePaymentAndSetResponse(res, req);
+  res.json({ data });
+} catch (error) {
+  res.status(500).json({
+    error: "Payment settlement failed",
+    message: error.message
+  });
+}
+```
+
+### Budget Exceeded
+
+```json
+{
+  "success": false,
+  "budgetExceeded": true,
+  "error": "Agent wallet has insufficient balance"
+}
+```
+
+## Caching
+
+To reduce costs, responses are cached:
+
+```javascript
+const CACHE_TTL_MS = 90 * 1000; // 90 seconds
+
+function getCachedNews(ticker) {
+  const entry = newsCache.get(ticker);
+  if (!entry || Date.now() > entry.expires) return null;
+  return entry.data;
+}
+```
+
+## Security Features
+
+- Non-custodial payments
+- On-chain settlement verification
+- Automatic timeout handling
+- Facilitator fallback
+- Request logging and analytics
+
+## Best Practices
+
+1. **Check Balance First**: Always verify sufficient USDC before calls
+2. **Handle Failures**: Implement fallback for payment failures
+3. **Use Caching**: Leverage cached responses when available
+4. **Monitor Costs**: Track spending across API calls
+5. **Test in Dev**: Use `/dev` endpoints during development
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="News API" icon="newspaper" href="/api/news">
+    Make your first x402 API call
+  </Card>
+  <Card title="Agent Tools" icon="robot" href="/api/research">
+    Integrate x402 with AI agents
+  </Card>
+</CardGroup>

@@ -1,0 +1,339 @@
+---
+title: 'Sundown Digest'
+description: 'Daily end-of-day summary of key crypto market events and movements'
+---
+
+## Endpoint
+
+```
+GET  /sundown-digest
+POST /sundown-digest
+```
+
+## Description
+
+Returns a daily end-of-day digest summarizing key cryptocurrency market events, price movements, news highlights, and significant developments from the trading day.
+
+## Pricing
+
+**$0.01 USD** per request (paid in USDC via x402)
+
+## Parameters
+
+No parameters required. Returns today's digest.
+
+## Request Examples
+
+### GET Request
+
+```bash
+curl -X GET "https://api.syraa.fun/sundown-digest"
+```
+
+### POST Request
+
+```bash
+curl -X POST https://api.syraa.fun/sundown-digest \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+<ResponseField name="sundownDigest" type="array">
+  Array of digest items for the day
+  
+  <Expandable title="Digest item">
+    <ResponseField name="category" type="string">
+      Event category (e.g., "Price Movement", "News", "Network")
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+      Digest item headline
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+      Detailed description of the event
+    </ResponseField>
+    
+    <ResponseField name="impact" type="string">
+      Market impact level (high, medium, low)
+    </ResponseField>
+    
+    <ResponseField name="timestamp" type="string">
+      Event timestamp (ISO 8601)
+    </ResponseField>
+    
+    <ResponseField name="tickers" type="array">
+      Related cryptocurrency tickers
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Success Response
+
+```json
+{
+  "sundownDigest": [
+    {
+      "category": "Price Movement",
+      "title": "Bitcoin breaks above $68,000",
+      "description": "BTC surged 5.2% today, breaking through key resistance at $68,000 on strong institutional buying. Volume increased 45% compared to 7-day average.",
+      "impact": "high",
+      "timestamp": "2026-03-03T20:15:00Z",
+      "tickers": ["BTC"]
+    },
+    {
+      "category": "News",
+      "title": "Ethereum Foundation announces new grant program",
+      "description": "$50M allocated to scaling solutions and developer tooling. Focus on L2 integration and developer experience improvements.",
+      "impact": "medium",
+      "timestamp": "2026-03-03T14:30:00Z",
+      "tickers": ["ETH"]
+    },
+    {
+      "category": "Network",  
+      "title": "Solana processes record daily transactions",
+      "description": "Network handled 65M transactions in 24 hours, new all-time high. Average TPS of 3,200 with 99.9% uptime.",
+      "impact": "medium",
+      "timestamp": "2026-03-03T18:00:00Z",
+      "tickers": ["SOL"]
+    },
+    {
+      "category": "DeFi",
+      "title": "TVL across DeFi protocols up 8%",
+      "description": "Total value locked reached $85B, driven by increased staking and LP activity. Jupiter and Raydium saw largest gains.",
+      "impact": "medium",
+      "timestamp": "2026-03-03T19:30:00Z",
+      "tickers": ["SOL", "USDC"]
+    },
+    {
+      "category": "Market",
+      "title": "Crypto market cap crosses $2.5T",
+      "description": "Overall market capitalization increased 3.1% to $2.52T. BTC dominance at 52.3%, ETH at 17.8%.",
+      "impact": "high",
+      "timestamp": "2026-03-03T21:00:00Z",
+      "tickers": ["BTC", "ETH"]
+    }
+  ]
+}
+```
+
+## Error Responses
+
+### 404 Not Found
+
+```json
+{
+  "error": "Sundown digest not found"
+}
+```
+
+### 500 Internal Error
+
+```json
+{
+  "error": "Failed to fetch sundown digest"
+}
+```
+
+## Caching
+
+Digest data is cached for **90 seconds** to improve performance.
+
+## Digest Categories
+
+### Price Movement
+Significant price changes and breakouts:
+- Major support/resistance breaks
+- Large percentage moves
+- Volume anomalies
+- New highs/lows
+
+### News
+Important news and announcements:
+- Protocol updates
+- Partnership announcements  
+- Regulatory developments
+- Industry events
+
+### Network
+Blockchain network updates:
+- Transaction volume records
+- Network upgrades
+- Performance metrics
+- Uptime statistics
+
+### DeFi
+DeFi protocol activity:
+- TVL changes
+- Protocol launches
+- Yield opportunities
+- LP activity
+
+### Market
+Broad market movements:
+- Market cap changes
+- Dominance shifts
+- Sector performance
+- Market sentiment
+
+## Impact Levels
+
+- **High**: Major market-moving events
+- **Medium**: Significant but contained impact  
+- **Low**: Minor events, informational
+
+## Data Source
+
+Fetches from cryptonews-api.com:
+
+```javascript
+const sundownDigest = await fetchSundownDigest();
+```
+
+## Code Example
+
+```javascript
+// Fetch today's digest
+const response = await fetch('https://api.syraa.fun/sundown-digest');
+const { sundownDigest } = await response.json();
+
+console.log(`=== Crypto Market Sundown Digest ===\n`);
+
+// Group by category
+const byCategory = {};
+sundownDigest.forEach(item => {
+  if (!byCategory[item.category]) byCategory[item.category] = [];
+  byCategory[item.category].push(item);
+});
+
+// Display by category
+Object.entries(byCategory).forEach(([category, items]) => {
+  console.log(`\n${category.toUpperCase()}:`);
+  items.forEach(item => {
+    const impact = item.impact.toUpperCase();
+    console.log(`\n  [${impact}] ${item.title}`);
+    console.log(`  ${item.description}`);
+    if (item.tickers.length > 0) {
+      console.log(`  Tickers: ${item.tickers.join(', ')}`);
+    }
+  });
+});
+```
+
+## Filtering by Impact
+
+```javascript
+// Show only high-impact events
+const highImpact = sundownDigest.filter(item => item.impact === 'high');
+
+console.log(`${highImpact.length} high-impact events today:`);
+highImpact.forEach(item => {
+  console.log(`- ${item.title}`);
+});
+```
+
+## Ticker-Specific Summary
+
+```javascript
+function getTickerSummary(digest, ticker) {
+  const relevantItems = digest.filter(
+    item => item.tickers.includes(ticker)
+  );
+  
+  if (relevantItems.length === 0) {
+    return `No significant ${ticker} events today`;
+  }
+  
+  return `${ticker} Summary (${relevantItems.length} events):\n` +
+    relevantItems.map(item => `- ${item.title}`).join('\n');
+}
+
+console.log(getTickerSummary(sundownDigest, 'BTC'));
+console.log(getTickerSummary(sundownDigest, 'SOL'));
+```
+
+## Payment Settlement
+
+Uses fallback settlement:
+
+```javascript
+const settle = await settlePaymentWithFallback(payload, accepted);
+
+if (!settle?.success && !isFacilitatorFailure) {
+  throw new Error(settle?.errorReason || "Settlement failed");
+}
+
+const effectiveSettle = settle?.success ? settle : { success: true };
+res.setHeader("Payment-Response", encodePaymentResponseHeader(effectiveSettle));
+```
+
+## Best Practices
+
+1. **Daily Routine**: Check digest at end of trading day
+2. **Focus on Impact**: Prioritize high-impact events
+3. **Track Tickers**: Monitor events for your holdings
+4. **Combine Sources**: Use with news and sentiment APIs
+5. **Historical Context**: Compare to previous days' digests
+
+## Use Cases
+
+### End-of-Day Summary
+Get quick overview of market activity:
+- What happened today?
+- Any major moves?
+- Key events to know
+
+### Portfolio Review
+Review events affecting your holdings:
+- Filter by tickers you hold
+- Assess impact on positions
+- Plan next day's strategy
+
+### Market Research
+Identify trends and patterns:
+- Recurring themes
+- Sector movements  
+- Emerging narratives
+
+### Trading Preparation
+Prepare for next session:
+- Key levels from today
+- Events to watch
+- Sentiment direction
+
+## Integration Example
+
+```javascript
+// Daily market report
+async function generateDailyReport() {
+  const [digest, sentiment, news] = await Promise.all([
+    fetch('https://api.syraa.fun/sundown-digest').then(r => r.json()),
+    fetch('https://api.syraa.fun/sentiment').then(r => r.json()),
+    fetch('https://api.syraa.fun/news').then(r => r.json())
+  ]);
+  
+  console.log('=== DAILY CRYPTO MARKET REPORT ===\n');
+  
+  // High-impact events
+  const highImpact = digest.sundownDigest.filter(i => i.impact === 'high');
+  console.log(`Key Events (${highImpact.length}):`); 
+  highImpact.forEach(e => console.log(`- ${e.title}`));
+  
+  // Sentiment summary
+  const latestSentiment = sentiment.sentimentAnalysis[0];
+  console.log(`\nMarket Sentiment: ${latestSentiment.general.sentiment_score > 0 ? 'Positive' : 'Negative'}`);
+  
+  // News count
+  console.log(`\nTotal News Articles: ${news.news.length}`);
+  
+  return { digest, sentiment, news };
+}
+```
+
+## Related Endpoints
+
+- [News API](/api/news) - Latest news throughout day
+- [Sentiment API](/api/sentiment) - Market sentiment trends
+- [Events API](/api/events) - Upcoming events calendar
+- [Trending Headlines](/api/trending-headline) - Top trending stories

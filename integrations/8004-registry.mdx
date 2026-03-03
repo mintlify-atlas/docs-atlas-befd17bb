@@ -1,0 +1,510 @@
+---
+title: "8004 Agent Registry"
+description: "Register Syra on the Solana agent registry for discoverability"
+---
+
+## Overview
+
+The **8004 Trustless Agent Registry** is a Solana-based registry that makes AI agents discoverable on-chain. Registering Syra on 8004 enables:
+
+- **Agent Discovery** — Users can find Syra through on-chain registry queries
+- **Service Metadata** — Advertise capabilities, endpoints, and payment requirements
+- **Collection Management** — Group multiple Syra agents under a single collection
+- **Reputation System** — Optional ATOM reputation engine integration
+
+**Registry Documentation:** [8004.qnt.sh/skill.md](https://8004.qnt.sh/skill.md)
+
+## What is 8004?
+
+8004 is an **on-chain agent registry** that:
+
+- Stores agent metadata on **IPFS**
+- Creates agent **NFTs** on Solana
+- Enables **trustless discovery** via on-chain queries
+- Supports **agent collections** for organizing multiple agents
+- Integrates with **ATOM** reputation tracking (optional)
+
+## Prerequisites
+
+Before registering Syra on 8004:
+
+<Steps>
+  <Step title="Solana Wallet">
+    Set up a Solana signer in `.env`:
+    
+    **Option 1: JSON Array (recommended)**
+    ```env
+    SOLANA_PRIVATE_KEY="[1,2,3,...,64]"
+    ```
+    
+    **Option 2: Base58 Encoded**
+    ```env
+    AGENT_PRIVATE_KEY="base58_encoded_key"
+    # or
+    ZAUTH_SOLANA_PRIVATE_KEY="base58_encoded_key"
+    ```
+    
+    **Option 3: Existing Payer**
+    ```env
+    PAYER_KEYPAIR="[1,2,3,...,64]"
+    ```
+  </Step>
+  
+  <Step title="Pinata API Key">
+    Create a [Pinata account](https://app.pinata.cloud) and generate a JWT:
+    
+    ```env
+    PINATA_JWT="your_pinata_jwt_token"
+    ```
+    
+    This is used to pin agent metadata to IPFS.
+  </Step>
+  
+  <Step title="Optional: Agent Image">
+    Set a custom image URI (IPFS or HTTPS):
+    
+    ```env
+    SYRA_AGENT_IMAGE_URI="ipfs://..."
+    # or
+    SYRA_AGENT_IMAGE_URI="https://syraa.fun/images/logo.jpg"
+    ```
+    
+    Defaults to Syra logo if not set.
+  </Step>
+  
+  <Step title="Optional: Network Selection">
+    Choose Solana cluster (defaults to mainnet-beta):
+    
+    ```env
+    SOLANA_CLUSTER="devnet"
+    # or
+    SOLANA_CLUSTER="mainnet-beta"
+    ```
+  </Step>
+  
+  <Step title="Optional: ATOM Reputation">
+    Enable ATOM reputation engine (irreversible):
+    
+    ```env
+    8004_ATOM_ENABLED=true
+    ```
+  </Step>
+</Steps>
+
+## Registration Methods
+
+### 1. Register Single Agent
+
+Register a new Syra agent on 8004:
+
+```bash
+cd api
+npm run register-8004
+```
+
+**What happens:**
+
+1. Generates agent metadata (name, description, services, skills)
+2. Uploads metadata to IPFS via Pinata
+3. Creates agent NFT on Solana
+4. Prints agent asset address and transaction signature
+
+**Output:**
+
+```
+✅ Agent registered successfully!
+Agent Asset: 8aJwH76QsQe5uEAxbFXha24toSUKjHxsdCk4BRuKERYx
+Transaction: 5X7h9...
+Token URI: ipfs://bafkreid...
+```
+
+<Info>
+  Save the **Agent Asset** address — you'll need it for future operations like `setAgentUri` or `giveFeedback`.
+</Info>
+
+### 2. Create Agent Collection
+
+After registering an agent, create a collection to group multiple Syra agents:
+
+```bash
+cd api
+npm run create-8004-collection
+```
+
+**Configuration:**
+
+```env
+# Required: Agent asset from registration
+SYRA_AGENT_ASSET="8aJwH76QsQe5uEAxbFXha24toSUKjHxsdCk4BRuKERYx"
+
+# Optional: Collection branding
+SYRA_COLLECTION_IMAGE_URI="ipfs://..."
+SYRA_COLLECTION_EXTERNAL_URL="https://syraa.fun"
+SYRA_COLLECTION_X_URL="https://x.com/syra_agent"
+SYRA_COLLECTION_BANNER_URI="ipfs://..."  # Optional
+```
+
+**Output:**
+
+```
+✅ Collection created and attached!
+Collection Pointer: c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm
+Transaction: 4Y8f2...
+```
+
+### 3. Register Agent + Collection (One Command)
+
+Register a new agent and attach it to a collection in one step:
+
+```bash
+cd api
+npm run register-8004-with-collection
+```
+
+**Two modes:**
+
+<Tabs>
+  <Tab title="Use Existing Collection">
+    ```env
+    # Attach to existing Syra collection
+    SYRA_COLLECTION_POINTER="c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+    ```
+    
+    Creates new agent and attaches the existing collection pointer.
+  </Tab>
+  
+  <Tab title="Create New Collection">
+    ```env
+    # Leave SYRA_COLLECTION_POINTER unset
+    
+    # Optional: Collection branding
+    SYRA_COLLECTION_IMAGE_URI="ipfs://..."
+    SYRA_COLLECTION_EXTERNAL_URL="https://syraa.fun"
+    SYRA_COLLECTION_X_URL="https://x.com/syra_agent"
+    ```
+    
+    Creates new agent and new collection, then attaches them.
+  </Tab>
+</Tabs>
+
+### 4. API Endpoint (Dynamic Registration)
+
+Create agents programmatically via API:
+
+**Endpoint:** `POST /8004/register-agent`
+
+**Payment:** Requires x402 payment (or use `/8004/dev/register-agent` in dev mode)
+
+**Request Body:**
+
+```json
+{
+  "name": "Syra Research Agent",
+  "description": "AI-powered trading intelligence for Solana",
+  "image": "https://syraa.fun/images/logo.jpg",
+  "services": [
+    {
+      "type": "MCP",
+      "value": "https://api.syraa.fun"
+    }
+  ],
+  "skills": ["trading-analysis", "market-research", "token-screening"],
+  "domains": ["finance", "defi"],
+  "x402Support": true,
+  "collectionPointer": "c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+}
+```
+
+**Response (201):**
+
+```json
+{
+  "asset": "9bKwH87RtRf6vFBybGXib35upTVLkHyteEl5CSvLFSZy",
+  "registerSignature": "6Y9g3...",
+  "tokenUri": "ipfs://bafkreibh...",
+  "setCollectionSignature": "3X5h1..."  // if collectionPointer was provided
+}
+```
+
+<Warning>
+  First request without payment returns **402 Payment Required** with payment details. Complete payment and retry with payment header.
+</Warning>
+
+## Agent Metadata
+
+Registered agents include the following metadata:
+
+### Core Fields
+
+```json
+{
+  "name": "Syra",
+  "description": "AI Trading Intelligence Agent for Solana",
+  "image": "ipfs://bafkreih...",
+  "external_url": "https://syraa.fun",
+  "attributes": [
+    {
+      "trait_type": "Agent Type",
+      "value": "Research & Trading Intelligence"
+    },
+    {
+      "trait_type": "Blockchain",
+      "value": "Solana"
+    }
+  ]
+}
+```
+
+### Services
+
+```json
+{
+  "services": [
+    {
+      "type": "MCP",
+      "value": "https://api.syraa.fun"
+    },
+    {
+      "type": "Telegram",
+      "value": "https://t.me/syra_trading_bot"
+    },
+    {
+      "type": "Web",
+      "value": "https://agent.syraa.fun"
+    }
+  ]
+}
+```
+
+### Skills & Domains
+
+```json
+{
+  "skills": [
+    "trading-signals",
+    "market-research",
+    "sentiment-analysis",
+    "token-screening",
+    "on-chain-analysis"
+  ],
+  "domains": [
+    "finance",
+    "defi",
+    "trading"
+  ]
+}
+```
+
+## Collection Management
+
+### Why Use Collections?
+
+- **Organization** — Group related agents (e.g., "Syra Trading Agents")
+- **Branding** — Unified visual identity across agents
+- **Discovery** — Users can find all agents in a collection
+- **Social Links** — Attach X/Twitter, website, documentation links
+
+### Collection Metadata
+
+```json
+{
+  "name": "Syra Agents",
+  "description": "Official collection of Syra AI trading agents",
+  "image": "ipfs://bafkreid...",
+  "external_url": "https://syraa.fun",
+  "banner_image": "ipfs://bafkreie...",
+  "x_url": "https://x.com/syra_agent"
+}
+```
+
+### Add Agent to Existing Collection
+
+When registering new agents, include the collection pointer:
+
+```bash
+# Set in .env before running register-8004-with-collection
+SYRA_COLLECTION_POINTER="c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+```
+
+Or via API:
+
+```json
+{
+  "name": "Syra Memecoin Scanner",
+  "description": "Specialized memecoin screening agent",
+  "collectionPointer": "c1:bafkreid3g6kogo55n5iob7pi36xppcycynn7m64pds7wshnankxjo52mfm"
+}
+```
+
+## ATOM Reputation Engine
+
+Optionally enable the ATOM reputation system:
+
+```env
+8004_ATOM_ENABLED=true
+```
+
+<Warning>
+  **Irreversible:** Once enabled, ATOM reputation cannot be disabled for that agent.
+</Warning>
+
+**Benefits:**
+
+- Track agent performance on-chain
+- User feedback influences reputation score
+- Reputation affects discoverability and trust
+
+**Trade-offs:**
+
+- Permanent on-chain record
+- Negative feedback impacts reputation
+- Additional transaction complexity
+
+## Querying Registered Agents
+
+### Find Agents by Service Type
+
+```typescript
+import { Connection, PublicKey } from '@solana/web3.js';
+
+const connection = new Connection('https://api.mainnet-beta.solana.com');
+
+// Query agents providing MCP service
+const agents = await connection.getProgramAccounts(
+  new PublicKey('8004_PROGRAM_ID'),
+  {
+    filters: [
+      {
+        memcmp: {
+          offset: 0,
+          bytes: 'MCP',
+        },
+      },
+    ],
+  }
+);
+```
+
+### Fetch Agent Metadata
+
+```typescript
+// Given an agent asset address
+const agentAsset = new PublicKey('8aJwH76QsQe5uEAxbFXha24toSUKjHxsdCk4BRuKERYx');
+
+// Fetch on-chain data
+const agentData = await connection.getAccountInfo(agentAsset);
+
+// Parse token URI from account data
+const tokenUri = parseTokenUri(agentData);
+
+// Fetch IPFS metadata
+const metadata = await fetch(tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+const agentMetadata = await metadata.json();
+
+console.log(agentMetadata);
+// {
+//   "name": "Syra",
+//   "description": "AI Trading Intelligence Agent",
+//   "services": [...],
+//   ...
+// }
+```
+
+## Update Agent Metadata
+
+To update an existing agent:
+
+1. **Update metadata** — Modify agent info locally
+2. **Upload to IPFS** — Pin new metadata via Pinata
+3. **Call `setAgentUri`** — Update on-chain URI to new IPFS hash
+
+```typescript
+import { setAgentUri } from '@8004/sdk';
+
+const newUri = 'ipfs://bafkreinew...';
+const signature = await setAgentUri(
+  connection,
+  payer,
+  agentAsset,
+  newUri
+);
+```
+
+## Integration with Syra Ecosystem
+
+Registering on 8004 enables:
+
+- **Cross-agent Discovery** — Other agents can find and call Syra services
+- **Marketplace Listing** — Appear in agent marketplaces and directories
+- **Reputation Building** — Accumulate on-chain feedback and reputation
+- **Service Advertising** — Advertise MCP, Telegram, API endpoints
+
+### Connected Services
+
+Registered Syra agents link to:
+
+- [MCP Server](/integrations/mcp-server) — `https://api.syraa.fun` (MCP service)
+- [Telegram Bot](/integrations/telegram) — `https://t.me/syra_trading_bot`
+- [x402 Agent](/integrations/x402-agent) — `https://agent.syraa.fun`
+- [API Playground](/integrations/api-playground) — `https://playground.syraa.fun`
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Registration fails: insufficient SOL">
+    - Ensure wallet has enough SOL for:
+      - Agent NFT creation (~0.01 SOL)
+      - Transaction fees (~0.0001 SOL)
+      - IPFS pinning is free via Pinata
+  </Accordion>
+  
+  <Accordion title="Pinata upload error">
+    - Verify `PINATA_JWT` is correct
+    - Check Pinata account is active
+    - Ensure metadata size is under limits
+    - Try generating a new JWT
+  </Accordion>
+  
+  <Accordion title="Collection attachment fails">
+    - Verify `SYRA_AGENT_ASSET` is correct
+    - Ensure you own the agent NFT
+    - Check wallet has authority to modify agent
+    - Verify collection pointer format: `c1:bafkrei...`
+  </Accordion>
+  
+  <Accordion title="Agent not appearing in searches">
+    - Allow time for on-chain indexing
+    - Verify transaction was confirmed
+    - Check agent metadata uploaded to IPFS
+    - Ensure services array is properly formatted
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Recommendations:**
+  
+  - **Test on devnet first** — Set `SOLANA_CLUSTER=devnet` for initial registration
+  - **Use collections** — Group related agents for better organization
+  - **Complete metadata** — Fill all fields for better discoverability
+  - **Monitor reputation** — Enable ATOM if you want on-chain feedback
+  - **Update regularly** — Keep agent URI current as services evolve
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="MCP Server" icon="plug" href="/integrations/mcp-server">
+    Expose Syra as MCP tools
+  </Card>
+  <Card title="x402 Agent" icon="robot" href="/integrations/x402-agent">
+    Deploy autonomous agents
+  </Card>
+  <Card title="API Playground" icon="flask" href="/integrations/api-playground">
+    Test agent capabilities
+  </Card>
+  <Card title="n8n Workflows" icon="workflow" href="/integrations/n8n-workflows">
+    Automate agent operations
+  </Card>
+</CardGroup>
